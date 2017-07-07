@@ -133,6 +133,8 @@ public class FPController : MonoBehaviour
 
     public event Action<ControllerState> OnStateChangeStart;
     public event Action<ControllerState> OnStateChangeEnd;
+
+    public event Action<AudioClip> OnFootStep;
     #endregion
 
     protected virtual void Start()
@@ -358,9 +360,9 @@ public class FPController : MonoBehaviour
     {
         if (constraints.Control)
         {
-            if(input.Jump)
+            if (input.Jump)
             {
-                if(CurrentState == ControllerState.Crouching || CurrentState == ControllerState.Proning)
+                if (CurrentState == ControllerState.Crouching || CurrentState == ControllerState.Proning)
                 {
                     GoToState(ControllerState.Walking);
                 }
@@ -380,13 +382,13 @@ public class FPController : MonoBehaviour
                 GoToState(ControllerState.Walking);
             }
 
-            if(input.Crouch)
+            if (input.Crouch)
             {
-                if(CurrentState == ControllerState.Crouching)
+                if (CurrentState == ControllerState.Crouching)
                 {
                     GoToState(ControllerState.Walking);
                 }
-                else if(constraints.Crouch)
+                else if (constraints.Crouch)
                 {
                     GoToState(ControllerState.Crouching);
                 }
@@ -482,7 +484,7 @@ public class FPController : MonoBehaviour
 
         soundData.PlayJumpSound();
 
-        if(OnGround)
+        if (OnGround)
             LeftGround();
 
         if (OnJumpStart != null)
@@ -501,7 +503,29 @@ public class FPController : MonoBehaviour
 
     protected virtual void Sounds()
     {
-        soundData.Movement.Update(moveInput.Vector.magnitude * (OnGround ? 1f : 0f));
+        MovementSounds();
+    }
+
+    float stepTimeDelta;
+    protected virtual void MovementSounds()
+    {
+        stepTimeDelta = Mathf.Clamp01(moveInput.Vector.magnitude) * Time.deltaTime;
+
+        if (stepTimeDelta == 0f || !OnGround)
+            soundData.Movement.StepTime = 0f;
+        else
+            soundData.Movement.StepTime += stepTimeDelta;
+
+        if (soundData.Movement.StepTime >= soundData.Movement.SetData.StepInterval)
+        {
+            soundData.Movement.StepTime = 0f;
+            soundData.Movement.PlayRandomSFX();
+
+            if (OnFootStep != null)
+                OnFootStep(soundData.Movement.PlayRandomSFX());
+            else
+                soundData.Movement.PlayRandomSFX();
+        }
     }
 
     #region Look
@@ -527,11 +551,11 @@ public class FPController : MonoBehaviour
 
     void Lean()
     {
-        if(LeanCheck(leanData.Offset * Mathf.Sign(input.Lean)))
+        if (LeanCheck(leanData.Offset * Mathf.Sign(input.Lean)))
         {
             leanData.Update(0f);
         }
-        else if(constraints.Control && constraints.Lean)
+        else if (constraints.Control && constraints.Lean)
         {
             leanData.Update(input.Lean);
         }
@@ -548,7 +572,7 @@ public class FPController : MonoBehaviour
     {
         Debug.DrawLine(cameraRig.Pivot.position, cameraRig.CameraTransform.position);
 
-        if(Physics.Linecast(cameraRig.Pivot.position, cameraRig.CameraTransform.position + transform.right * offset, leanData.Mask, leanData.TriggerInteraction))
+        if (Physics.Linecast(cameraRig.Pivot.position, cameraRig.CameraTransform.position + transform.right * offset, leanData.Mask, leanData.TriggerInteraction))
         {
             return true;
         }
@@ -582,7 +606,7 @@ public class FPController : MonoBehaviour
 
             cameraRotationTarget = Quaternion.Euler(cameraEuelerRotation);
         }
-        else if(cameraEuelerRotation.x < -lookRange.Up)
+        else if (cameraEuelerRotation.x < -lookRange.Up)
         {
             cameraEuelerRotation.x = Mathf.Clamp(cameraEuelerRotation.x, -lookRange.Up, 0f);
 
@@ -598,10 +622,10 @@ public class FPController : MonoBehaviour
         lookCoord.cameraPosition.x = 0f;
         lookCoord.cameraPosition.z = 0f;
 
-        if(OnGround)
+        if (OnGround)
             headBobData.Update(moveInput.Vector.magnitude * (constraints.HeadBob ? 1f : 0f), states.Traverser.Lerp.Value);
 
-        if(headBobData.ToCamera)
+        if (headBobData.ToCamera)
             lookCoord.cameraPosition += headBobData.Offset;
     }
 
@@ -609,7 +633,7 @@ public class FPController : MonoBehaviour
     {
         Move();
     }
-    
+
     #region Move
     Vector3 velocity;
     protected virtual void Move()
@@ -654,7 +678,7 @@ public class FPController : MonoBehaviour
 #endif
         #endregion
 
-        if(castData.Ground.rigidbody && !castData.Ground.rigidbody.isKinematic)
+        if (castData.Ground.rigidbody && !castData.Ground.rigidbody.isKinematic)
         {
             velocity.y = Rigidbody.velocity.y;
         }
@@ -683,7 +707,7 @@ public class FPController : MonoBehaviour
 
         if (jumpData.Power.Value > 0f) //Jumping
         {
-            if(RoofCastCheck() && (!castData.Roof.rigidbody || castData.Roof.rigidbody.isKinematic))
+            if (RoofCastCheck() && (!castData.Roof.rigidbody || castData.Roof.rigidbody.isKinematic))
             {
                 Rigidbody.useGravity = true;
 
@@ -698,7 +722,7 @@ public class FPController : MonoBehaviour
                 jumpData.Power.MoveTowardsMin();
             }
 
-            if(jumpData.Power.Value == 0f)
+            if (jumpData.Power.Value == 0f)
                 JumpEnd();
         }
         else //Falling
@@ -756,7 +780,7 @@ public class ControllerSoundData
 
         [SerializeField]
         float stepTime;
-        public float StepTime { get { return stepTime; } }
+        public float StepTime { get { return stepTime; } set { if (value < 0) value = 0f; stepTime = value; } }
 
         ControllerSoundData soundData;
 
@@ -765,22 +789,16 @@ public class ControllerSoundData
             this.soundData = soundData;
         }
 
-        public void Update(float magnitude)
+        public AudioClip PlayRandomSFX()
         {
-            magnitude = Mathf.Clamp01(magnitude);
+            AudioClip clip = null;
 
-            if (magnitude == 0f)
-                stepTime = 0f;
-            else
-                stepTime += Time.deltaTime * magnitude;
+            if (SetData.Set)
+                clip = SetData.Set.RandomAudioClip;
 
-            if (stepTime >= SetData.StepInterval)
-            {
-                if (SetData.Set)
-                    soundData.source.PlayOneShot(SetData.Set.RandomAudioClip);
+            soundData.source.PlayOneShot(clip);
 
-                stepTime = 0f;
-            }
+            return clip;
         }
     }
 
@@ -823,12 +841,12 @@ public class ControllerSoundData
 
     public void PlayJumpSound()
     {
-        if(CurrentSet.Jump)
+        if (CurrentSet.Jump)
             source.PlayOneShot(CurrentSet.Jump.RandomAudioClip);
     }
     public void PlayLandingSound()
     {
-        if(CurrentSet.Landing)
+        if (CurrentSet.Landing)
             source.PlayOneShot(CurrentSet.Landing.RandomAudioClip);
     }
 }
@@ -879,7 +897,7 @@ public class ControllerHeadBobData
                 Mathf.RoundToInt(time),
                 Mathf.Lerp(previous.Gravity, current.Gravity, statesLerpScale) * Time.deltaTime);
         else
-            time += moveInputMagnitude * 
+            time += moveInputMagnitude *
                 Mathf.Lerp(previous.Delta, current.Delta, statesLerpScale);
 
         offset.y = (previous.Evaluate(time) * (scale * (statesLerpScale * -1 + 1))) + (current.Evaluate(time) * scale * statesLerpScale);

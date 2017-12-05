@@ -1,5 +1,11 @@
 fileFormatVersion: 2
 guid: 02dbd2dac67b859459ba82ddfb6dfcf6
+labels:
+- Character
+- Controller
+- FPS
+- FirstPerson
+- Rigidbody
 timeCreated: 1498723443
 licenseType: Free
 NativeFormatImporter:

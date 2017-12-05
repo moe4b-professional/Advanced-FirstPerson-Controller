@@ -18,27 +18,32 @@ using UnityEditorInternal;
 using Random = UnityEngine.Random;
 using Object = UnityEngine.Object;
 
-[CreateAssetMenu(menuName = "Sound/Controller/States")]
-public class ControllerSoundStates : ControllerStatesScritableObjectBase<ControllerSoundStates.SetData>
+using Moe.Tools;
+
+namespace ARFC
 {
-    [Space]
-    [SerializeField]
-    SoundSet jump;
-    public SoundSet Jump { get { return jump; } }
-
-    [SerializeField]
-    SoundSet landing;
-    public SoundSet Landing { get { return landing; } }
-
-    [Serializable]
-    public class SetData
+    [CreateAssetMenu(menuName = FPController.MenuPath + "Sound States")]
+    public class ControllerSoundStates : ControllerStatesScritableObjectBase<ControllerSoundStates.SetData>
     {
+        [Space]
         [SerializeField]
-        float stepInterval = 1f;
-        public float StepInterval { get { return stepInterval; } }
+        SoundSet jump;
+        public SoundSet Jump { get { return jump; } }
 
         [SerializeField]
-        MovementSoundSet set;
-        public MovementSoundSet Set { get { return set; } }
+        SoundSet landing;
+        public SoundSet Landing { get { return landing; } }
+
+        [Serializable]
+        public class SetData
+        {
+            [SerializeField]
+            float stepInterval = 1f;
+            public float StepInterval { get { return stepInterval; } }
+
+            [SerializeField]
+            SoundSet set;
+            public SoundSet Set { get { return set; } }
+        }
     }
 }

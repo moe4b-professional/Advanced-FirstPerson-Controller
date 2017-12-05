@@ -18,8 +18,11 @@ using UnityEditorInternal;
 using Random = UnityEngine.Random;
 using Object = UnityEngine.Object;
 
-[CreateAssetMenu(menuName = "HeadBob/States")]
-public class ControllerHeadBobStates : ControllerStatesScritableObjectBase<HeadBobData>
+namespace ARFC
 {
-    
+    [CreateAssetMenu(menuName = HeadBobData.MenuPath + "States")]
+    public class ControllerHeadBobStates : ControllerStatesScritableObjectBase<HeadBobData>
+    {
+
+    }
 }

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19aef01160209e140a675232cbf1dd9b, type: 3}
+  m_Name: Dirt Sound States
+  m_EditorClassIdentifier: 
+  standing:
+    stepInterval: 0.5
+    set: {fileID: 11400000, guid: a6a6e3f3e55abe6428e58f5d459fefd5, type: 2}
+  sprint:
+    stepInterval: 0.3
+    set: {fileID: 11400000, guid: a6a6e3f3e55abe6428e58f5d459fefd5, type: 2}
+  crouch:
+    stepInterval: 0.8
+    set: {fileID: 11400000, guid: a6a6e3f3e55abe6428e58f5d459fefd5, type: 2}
+  prone:
+    stepInterval: 1
+    set: {fileID: 11400000, guid: a6a6e3f3e55abe6428e58f5d459fefd5, type: 2}
+  jump: {fileID: 11400000, guid: a6a6e3f3e55abe6428e58f5d459fefd5, type: 2}
+  landing: {fileID: 11400000, guid: a6a6e3f3e55abe6428e58f5d459fefd5, type: 2}

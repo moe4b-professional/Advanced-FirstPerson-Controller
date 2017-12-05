@@ -18,9 +18,12 @@ using UnityEditorInternal;
 using Random = UnityEngine.Random;
 using Object = UnityEngine.Object;
 
-public class SoundSurface : MonoBehaviour
+namespace ARFC
 {
-    [SerializeField]
-    ControllerSoundStates soundData;
-    public ControllerSoundStates SoundData { get { return soundData; } }
+    public class SoundSurface : MonoBehaviour
+    {
+        [SerializeField]
+        ControllerSoundStates soundData;
+        public ControllerSoundStates SoundData { get { return soundData; } }
+    }
 }

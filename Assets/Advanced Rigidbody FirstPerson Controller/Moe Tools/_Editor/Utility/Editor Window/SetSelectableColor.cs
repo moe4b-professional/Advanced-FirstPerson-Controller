@@ -62,7 +62,7 @@ namespace Moe.GameFramework
             {
                 if (GUILayout.Button("Apply"))
                 {
-                    GameTools.GameObject.GetNestedComponents<Selectable>(Selection.activeGameObject).ForEach((Selectable selectable) =>
+                    MoeTools.GameObject.GetNestedComponents<Selectable>(Selection.activeGameObject).ForEach((Selectable selectable) =>
                     {
                         Debug.Log(selectable.name);
 

@@ -20,7 +20,7 @@ using Object = UnityEngine.Object;
 
 namespace ARFC
 {
-    [CreateAssetMenu(menuName = FPControllerInputModule.MenuPath + "Key")]
+    [CreateAssetMenu(menuName = FPControllerInputModule.MenuPath + "Key Module")]
     public class FPControllerKeyInput : FPControllerInputModule
     {
         [Header("Keys")]

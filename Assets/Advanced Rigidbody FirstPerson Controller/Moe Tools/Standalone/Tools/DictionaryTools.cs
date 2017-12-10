@@ -15,15 +15,15 @@ using UnityEditorInternal;
 #endif
 
 using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
+using URandom = UnityEngine.Random;
 
-using Moe.Tools;
-
-namespace ARFC
+namespace Moe.Tools
 {
-    [CreateAssetMenu(menuName = FPControllerInputModule.MenuPath + "Modulator")]
-	public class FPControllerInputModulator : InputModulator<FPControllerInputModule>
-	{
-        
+	public static partial class MoeTools
+    {
+        public static class Ditctionary
+        {
+
+        }
     }
 }

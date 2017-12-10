@@ -17,13 +17,18 @@ using UnityEditorInternal;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-using Moe.Tools;
-
-namespace ARFC
+namespace Moe.Tools
 {
-    [CreateAssetMenu(menuName = FPControllerInputModule.MenuPath + "Modulator")]
-	public class FPControllerInputModulator : InputModulator<FPControllerInputModule>
-	{
-        
+    public static partial class MoeTools
+    {
+        public static class Constants
+        {
+            public static class Paths
+            {
+                public const string Menu = "Moe/";
+
+                public const string Tools = Menu + "Tools/";
+            }
+        }
     }
 }

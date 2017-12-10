@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d910b6b317fdd44f993764e788dd71b, type: 3}
+  m_Name: FPController Input Modulator
+  m_EditorClassIdentifier: 
+  platforms:
+  - name: PC
+    module: {fileID: 11400000, guid: f380848738f6b4a49bd6ce83a077fb5a, type: 2}
+    supportedPlatforms: 07000000020000000000000001000000100000000d000000
+  - name: Mobile
+    module: {fileID: 0}
+    supportedPlatforms: 0b0000000800000017000000
+  - name: XBOX
+    module: {fileID: 0}
+    supportedPlatforms: 1b000000
+  - name: PS4
+    module: {fileID: 0}
+    supportedPlatforms: 19000000

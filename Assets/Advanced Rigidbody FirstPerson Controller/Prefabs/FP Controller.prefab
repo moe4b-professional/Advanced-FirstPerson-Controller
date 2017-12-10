@@ -20,7 +20,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4409389353209762}
   - component: {fileID: 114061722404776852}
-  - component: {fileID: 114204990445426142}
   - component: {fileID: 136695201364894728}
   - component: {fileID: 54970699631062852}
   - component: {fileID: 82339567895202364}
@@ -336,7 +335,9 @@ MonoBehaviour:
     maxCount: 1
     pushDownMultiplier: 2.5
   groundCast:
-    mask: {}
+    mask:
+      serializedVersion: 2
+      m_Bits: 4294967295
     triggerInteraction: 1
     checkRange: 0.15
     radiusScale: 0.5
@@ -345,11 +346,7 @@ MonoBehaviour:
     rigidbody: {fileID: 0}
     debug:
       draw: 1
-      color:
-        r: 0
-        g: 1
-        b: 0
-        a: 1
+      color: {r: 0, g: 1, b: 0, a: 1}
     slope:
       value: 4.574103
       max: 50
@@ -357,7 +354,9 @@ MonoBehaviour:
     grounded: 1
     minFallDistance: 0.2
   roofCast:
-    mask: {}
+    mask:
+      serializedVersion: 2
+      m_Bits: 4294967295
     triggerInteraction: 1
     checkRange: 0.15
     radiusScale: 0.5
@@ -366,11 +365,7 @@ MonoBehaviour:
     rigidbody: {fileID: 0}
     debug:
       draw: 1
-      color:
-        r: 0
-        g: 1
-        b: 0
-        a: 1
+      color: {r: 0, g: 1, b: 0, a: 1}
   sound:
     source: {fileID: 82339567895202364}
     movement:
@@ -405,38 +400,16 @@ MonoBehaviour:
       gravity: 6
       snap: 0
     alignScale: 0.8
-    mask: {}
+    mask:
+      serializedVersion: 2
+      m_Bits: 4294967295
     triggerInteraction: 1
     offset: 0.1
   headbob:
     scale: 1
     states: {fileID: 11400000, guid: 4127501edc3dac447b7f42bb2492d36e, type: 2}
-    applyToCamera: 1
     offset: {x: 0, y: 0, z: 0}
---- !u!114 &114204990445426142
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1130185499599356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d910b6b317fdd44f993764e788dd71b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  platforms:
-  - name: PC
-    module: {fileID: 11400000, guid: f380848738f6b4a49bd6ce83a077fb5a, type: 2}
-    supportedPlatforms: 0700000002000000000000000100000004000000100000000d000000
-  - name: Mobile
-    module: {fileID: 0}
-    supportedPlatforms: 0b0000000800000017000000
-  - name: XBOX
-    module: {fileID: 0}
-    supportedPlatforms: 1b000000
-  - name: PS4
-    module: {fileID: 0}
-    supportedPlatforms: 19000000
+  inputModulator: {fileID: 11400000, guid: 9e52d3c218d2e0944b3c79f7ca45c8e1, type: 2}
 --- !u!124 &124785858767598704
 Behaviour:
   m_ObjectHideFlags: 1

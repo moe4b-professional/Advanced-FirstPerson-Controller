@@ -24,7 +24,7 @@ namespace ARFC
 {
     public class BaseFPController : TypesData.TFPController
     {
-        public const string MenuPath = Constants.CreateAssetMenuPath + "ARFC/";
+        public const string MenuPath = MoeTools.Constants.Paths.Menu + "ARFC/";
 
         public FPController This { get { return this as FPController; } }
 
@@ -123,6 +123,9 @@ namespace ARFC
         public FPController.HeadbobModule Headbob { get { return headbob; } }
 
         //the current input module
+        [SerializeField]
+        protected FPControllerInputModulator inputModulator;
+        public FPControllerInputModulator InputModulator { get { return inputModulator; } }
         public FPControllerInputModule InputModule { get; protected set; }
         //the rigidbody attached to the controller
         public Rigidbody Rigidbody { get; protected set; }
@@ -225,7 +228,7 @@ namespace ARFC
         /// </summary>
         protected virtual void GetInputModule()
         {
-            InputModule = GetComponent<FPControllerInputModulator>().GetCurrentModule();
+            InputModule = inputModulator.GetCurrentModule();
         }
         /// <summary>
         /// initilizes the modules (jump, movement, lean, ...)

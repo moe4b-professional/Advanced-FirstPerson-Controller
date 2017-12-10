@@ -48,7 +48,7 @@ public class QuickTools : EditorWindow
     static GameObject replacment;
     void DrawReplace()
     {
-        InspectorTools.StartVertical("Replace");
+        MoeTools.Inspector.StartVertical("Replace");
 
         replacment = (GameObject)EditorGUILayout.ObjectField("Replacment", replacment, typeof(GameObject), false);
 
@@ -60,7 +60,7 @@ public class QuickTools : EditorWindow
                 Replace(Selection.gameObjects, replacment);
         }
 
-        InspectorTools.EndVertical();
+        MoeTools.Inspector.EndVertical();
     }
     public static void Replace(GameObject[] targets, GameObject replacment)
     {
@@ -87,7 +87,7 @@ public class QuickTools : EditorWindow
     static string groupName = "group";
     void DrawGroup()
     {
-        InspectorTools.StartVertical("Group");
+        MoeTools.Inspector.StartVertical("Group");
 
         groupName = EditorGUILayout.TextField("Name", groupName);
         if (GUILayout.Button("Group"))
@@ -98,7 +98,7 @@ public class QuickTools : EditorWindow
                 Group(Selection.gameObjects, groupName);
         }
 
-        InspectorTools.EndVertical();
+        MoeTools.Inspector.EndVertical();
     }
     public static void Group(GameObject[] targets, string name)
     {
@@ -115,7 +115,7 @@ public class QuickTools : EditorWindow
     static Vector3 newLocalPosition;
     void DrawEditLocalPosition()
     {
-        InspectorTools.StartVertical("Edit Local Position");
+        MoeTools.Inspector.StartVertical("Edit Local Position");
 
         newLocalPosition = EditorGUILayout.Vector3Field("Position", newLocalPosition);
         if (GUILayout.Button("Change Local Position"))
@@ -129,7 +129,7 @@ public class QuickTools : EditorWindow
                 }
         }
 
-        InspectorTools.EndVertical();
+        MoeTools.Inspector.EndVertical();
     }
     public static void EditTransformLocalPosition(Transform transform, Vector3 newPosition)
     {

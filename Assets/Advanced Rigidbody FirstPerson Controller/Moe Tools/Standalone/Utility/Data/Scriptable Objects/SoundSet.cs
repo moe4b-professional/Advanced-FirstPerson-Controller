@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -17,13 +16,15 @@ using UnityEditorInternal;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-using Moe.Tools;
-
-namespace ARFC
+namespace Moe.Tools
 {
-    [CreateAssetMenu(menuName = FPControllerInputModule.MenuPath + "Modulator")]
-	public class FPControllerInputModulator : InputModulator<FPControllerInputModule>
-	{
-        
+    [CreateAssetMenu(menuName = MoeTools.Constants.Paths.Tools + "Sound Set")]
+    public partial class SoundSet : ScriptableObject
+    {
+        [SerializeField]
+        AudioClip[] clips;
+        public AudioClip[] Clips { get { return clips; } }
+
+        public AudioClip RandomClip { get { return clips.GetRandom(); } }
     }
 }

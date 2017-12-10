@@ -33,7 +33,7 @@ namespace Moe.Tools
         {
             get
             {
-                string PpPath = EditorTools.GetScriptPath(CSFile);
+                string PpPath = MoeTools.Editor.GetScriptPath(CSFile);
                 if (PpPath == string.Empty)
                     throw new Exception("Couldn't Find Path For " + ToString() + ", Cs File : " + CSFile);
 
@@ -45,7 +45,7 @@ namespace Moe.Tools
         {
             get
             {
-                return EditorTools.ToSystemPath(assetPath);
+                return MoeTools.Editor.ToSystemPath(assetPath);
             }
         }
 

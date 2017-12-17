@@ -38,6 +38,10 @@ namespace ARFC
         TData prone;
         public TData Prone { get { return prone; } }
 
+        [SerializeField]
+        TData slide;
+        public TData Slide { get { return crouch; } }
+
         public TData GetData(ControllerState state)
         {
             switch (state)
@@ -50,6 +54,8 @@ namespace ARFC
                     return crouch;
                 case ControllerState.Proning:
                     return prone;
+                case ControllerState.Sliding:
+                    return slide;
             }
 
             throw new ArgumentException("Controller State Data " + state.ToString() + " Not Defined");

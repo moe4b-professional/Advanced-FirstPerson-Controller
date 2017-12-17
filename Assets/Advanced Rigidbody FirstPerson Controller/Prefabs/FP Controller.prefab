@@ -70,8 +70,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1130185499599356}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: 4}
+  m_LocalRotation: {x: -0, y: 0.70710665, z: -0, w: 0.70710695}
+  m_LocalPosition: {x: -2, y: 0, z: 12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4626140961612734}
@@ -173,7 +173,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -270,6 +270,7 @@ MonoBehaviour:
     sprint: 1
     crouch: 1
     prone: 1
+    slide: 1
     look: 1
     lean: 1
     headBob: 1
@@ -277,8 +278,8 @@ MonoBehaviour:
     speed:
       vector: {x: 0, y: 0}
       current:
-        value: 3.5
-        max: 3.5
+        value: 0
+        max: 0
       walk:
         value: 0
         delta: 15
@@ -295,18 +296,17 @@ MonoBehaviour:
     inAir:
       control: 0.15
       deAcceleration: 3
+      updateDirection: 0
     velocity: {x: 0, y: 0, z: 0}
   states:
     startingState: 0
-    walking:
+    walk:
       height: 1.8
       radius: 0.35
       speed: 3.5
     sprint:
-      height: 1.8
-      radius: 0.35
       speed: 7
-    sprintInput: 0
+      input: 1
     crouch:
       height: 1
       radius: 0.35
@@ -315,17 +315,21 @@ MonoBehaviour:
       height: 0.4
       radius: 0.2
       speed: 0.5
-    custom:
-      height: 0
-      radius: 0
-      speed: 0
     traverser:
       lerp:
-        value: 1
+        value: 0
         delta: 3.5
         angle: 0
       pivotScale: 0.5
       cameraOffset: 0.05
+  slide:
+    power:
+      value: 0
+      delta: 0.85
+      angle: 0
+      max: 1.2
+    stateTraverseMultiplier: 2
+    updateDirection: 0
   jump:
     power:
       value: 0

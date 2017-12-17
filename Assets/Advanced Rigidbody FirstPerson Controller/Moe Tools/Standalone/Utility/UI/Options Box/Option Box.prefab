@@ -77,7 +77,6 @@ GameObject:
   - component: {fileID: 114625923225122198}
   - component: {fileID: 114284383126891342}
   - component: {fileID: 114500455976476104}
-  - component: {fileID: 114466128114423690}
   m_Layer: 5
   m_Name: Option Box
   m_TagString: Untagged
@@ -205,22 +204,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114466128114423690
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1391627343341520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f79371ea2360b69498adc1e81faea762, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  theme: {fileID: 11400000, guid: 4b4b28e2de4eccf42a0310f28373847e, type: 2}
-  image: {fileID: 114625923225122198}
-  label: {fileID: 114907433896043480}
-  next: {fileID: 114477365708738688}
-  previous: {fileID: 114654353506575710}
 --- !u!114 &114477365708738688
 MonoBehaviour:
   m_ObjectHideFlags: 1

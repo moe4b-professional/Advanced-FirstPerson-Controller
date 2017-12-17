@@ -26,24 +26,31 @@ namespace ARFC
         [Header("Keys")]
         [SerializeField]
         RawkeyCodeAxis walkAxis = new RawkeyCodeAxis(KeyCode.W, KeyCode.S);
+        public RawkeyCodeAxis WalkAxis { get { return walkAxis; } }
 
         [SerializeField]
         RawkeyCodeAxis strafeAxis = new RawkeyCodeAxis(KeyCode.D, KeyCode.A);
+        public RawkeyCodeAxis StrafeAxis { get { return strafeAxis; } }
 
         [SerializeField]
         RawkeyCodeAxis leanAxis = new RawkeyCodeAxis(KeyCode.E, KeyCode.Q);
+        public RawkeyCodeAxis LeanAxis { get { return leanAxis; } }
 
         [SerializeField]
         KeyCode jumpKey = KeyCode.Space;
+        public KeyCode JumpKey { get { return jumpKey; } }
 
         [SerializeField]
         KeyCode sprintKey = KeyCode.LeftShift;
+        public KeyCode SprintKey { get { return sprintKey; } }
 
         [SerializeField]
         KeyCode crouchKey = KeyCode.C;
+        public KeyCode CrouchKey { get { return crouchKey; } }
 
         [SerializeField]
         KeyCode proneKey = KeyCode.LeftControl;
+        public KeyCode ProneKey { get { return proneKey; } }
 
         public override void UpdateInput()
         {

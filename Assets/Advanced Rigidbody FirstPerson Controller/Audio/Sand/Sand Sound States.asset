@@ -23,5 +23,8 @@ MonoBehaviour:
   prone:
     stepInterval: 1
     set: {fileID: 11400000, guid: 3439c109373ec094d8fee52e51f70954, type: 2}
+  slide:
+    stepInterval: 0.4
+    set: {fileID: 11400000, guid: aa1939ec359a64f4f90bdb07960969b9, type: 2}
   jump: {fileID: 11400000, guid: 3439c109373ec094d8fee52e51f70954, type: 2}
   landing: {fileID: 11400000, guid: 3439c109373ec094d8fee52e51f70954, type: 2}

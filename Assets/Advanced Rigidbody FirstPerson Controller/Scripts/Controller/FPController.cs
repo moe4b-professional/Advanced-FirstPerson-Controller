@@ -39,331 +39,14 @@ namespace ARFC
         /// </summary>
         protected bool initilized = false;
 
+        public FPController.ModuleManager Modules { get; protected set; }
+
         /// <summary>
         /// controller constraints (move, jump, ...)
         /// </summary>
         [SerializeField]
         protected FPController.ConstraintsData constraints;
         public FPController.ConstraintsData Constraints { get { return constraints; } }
-
-        public FPController.ModuleManager Modules { get; protected set; }
-
-        /// <summary>
-        /// movement data, will calculate and apply velocity based on current state and speed
-        /// </summary>
-        [Space()]
-        [SerializeField]
-        protected FPController.MovementModule movement;
-        public FPController.MovementModule Movement { get { return movement; } }
-
-        /// <summary>
-        /// controller's state data (crouching, sprinting, ...) will controller and apply state transitions
-        /// </summary>
-        [SerializeField]
-        protected FPController.StatesModule states;
-        public FPController.StatesModule States { get { return states; } }
-        public ControllerState CurrentState { get { return states.Traverser.State; } }
-        public ControllerStateData CurrentStateData { get { return states.Traverser.Current; } }
-
-        /// <summary>
-        /// controls the controllers jump functionality and handles the jump input
-        /// </summary>
-        [SerializeField]
-        protected FPController.JumpModule jump;
-        public FPController.JumpModule Jump { get { return jump; } }
-
-        /// <summary>
-        /// checks if the controller is on ground and the specifics of the ground (rigidbody, slope angle, ...)
-        /// </summary>
-        [SerializeField]
-        protected FPController.GroundCastModule groundCast;
-        public FPController.GroundCastModule GroundCast { get { return groundCast; } }
-
-        /// <summary>
-        /// checks if the controller's head is hitting something
-        /// </summary>
-        [SerializeField]
-        protected FPController.RoofCastModule roofCast;
-        public FPController.RoofCastModule RoofCast { get { return roofCast; } }
-
-        /// <summary>
-        /// controls the sound of the controller (moving, jumping, ....)
-        /// </summary>
-        [SerializeField]
-        protected FPController.SoundModule sound;
-        public FPController.SoundModule Sound { get { return sound; } }
-
-        /// <summary>
-        /// defines the camera rig (pivot & camera), and also a coordinates variable for both pivot & camera that can be modified by other modules and get's applied last
-        /// </summary>
-        [Space()]
-        [SerializeField]
-        protected FPController.CameraRigModule cameraRig;
-        public FPController.CameraRigModule CameraRig { get { return cameraRig; } }
-
-        /// <summary>
-        /// defines the look data & functionality (sensitivity, smoothnes, invert axis, ...)
-        /// </summary>
-        [SerializeField]
-        protected FPController.LookModule look;
-        public FPController.LookModule Look { get { return look; } }
-
-        /// <summary>
-        /// controls the leaning data & functionality
-        /// </summary>
-        [SerializeField]
-        protected FPController.LeanModule lean;
-        public FPController.LeanModule Lean { get { return lean; } }
-
-        /// <summary>
-        /// controls the headbob data & functionality based on current state defined from a headbob states asset
-        /// </summary>
-        [SerializeField]
-        protected FPController.HeadbobModule headbob;
-        public FPController.HeadbobModule Headbob { get { return headbob; } }
-
-        //the current input module
-        [SerializeField]
-        protected FPControllerInputModulator inputModulator;
-        public FPControllerInputModulator InputModulator { get { return inputModulator; } }
-        public FPControllerInputModule InputModule { get; protected set; }
-        //the rigidbody attached to the controller
-        public Rigidbody Rigidbody { get; protected set; }
-        //the capsule collider attached to the contoller
-        public CapsuleCollider Collider { get; protected set; }
-
-        //is the controller on the ground ?
-        public virtual bool OnGround { get { return groundCast.Grounded; } }
-
-        #region Events
-        /// <summary>
-        /// multiple events that are pretty self explanitory, some are used internaly by modules to comunicate
-        /// </summary>
-        public event Action OnLeftGround;
-        internal virtual void InvokeOnLeftGround()
-        {
-            if (OnLeftGround != null)
-                OnLeftGround();
-        }
-
-        public event Action<ControllerLandingData> OnLanded;
-        internal virtual void InvokeOnLanded(ControllerLandingData data)
-        {
-            if (OnLanded != null)
-                OnLanded(data);
-        }
-
-        public event Action OnJumpStart;
-        internal virtual void InvokeOnJumpStart()
-        {
-            InvokeOnLeftGround();
-
-            if (OnJumpStart != null)
-                OnJumpStart();
-        }
-
-        public event Action OnJumpEnd;
-        internal virtual void InvokeOnJumpEnd()
-        {
-            if (OnJumpEnd != null)
-                OnJumpEnd();
-        }
-
-        public delegate void StateChangeDelegate(ControllerState oldState, ControllerState newState);
-        public event StateChangeDelegate OnStateChangeStart;
-        internal virtual void InvokeOnStateChangeStart(ControllerState oldState, ControllerState newState)
-        {
-            if (OnStateChangeStart != null)
-                OnStateChangeStart(oldState, newState);
-        }
-
-        public event Action<ControllerState> OnStateChangeEnd;
-        internal virtual void InvokeOnStateChangeEnd(ControllerState state)
-        {
-            if (OnStateChangeEnd != null)
-                OnStateChangeEnd(state);
-        }
-
-        public event Action<AudioClip> OnFootStep;
-        internal virtual void InvokeOnFootStep(AudioClip clip)
-        {
-            if (OnFootStep != null)
-                OnFootStep(clip);
-        }
-        #endregion
-
-        protected virtual void Awake()
-        {
-            if (initMode == ControllerInitMode.Awake)
-                Init();
-        }
-        protected virtual void Start()
-        {
-            if (initMode == ControllerInitMode.Start)
-                Init();
-        }
-
-        /// <summary>
-        /// the Init method Initilizes the controller's data (get current input module, get components like rigidbody & collider, ...)
-        /// </summary>
-        public virtual void Init()
-        {
-            initilized = true;
-
-            GetComponents();
-            GetInputModule();
-
-            InitModules();
-        }
-        /// <summary>
-        /// get the needed components (rigidbody, collider, ...)
-        /// </summary>
-        protected virtual void GetComponents()
-        {
-            Rigidbody = GetComponent<Rigidbody>();
-            Collider = GetComponent<CapsuleCollider>();
-        }
-        /// <summary>
-        /// get the current input module from the InputModulator
-        /// </summary>
-        protected virtual void GetInputModule()
-        {
-            InputModule = inputModulator.GetCurrentModule();
-        }
-        /// <summary>
-        /// initilizes the modules (jump, movement, lean, ...)
-        /// </summary>
-        protected virtual void InitModules()
-        {
-            Modules = new FPController.ModuleManager();
-
-            AddModule();
-
-            Modules.SetLinks(This);
-            Modules.Init();
-        }
-        protected virtual void AddModule()
-        {
-            Modules.Add(movement);
-            Modules.Add(states);
-            Modules.Add(jump);
-
-            Modules.Add(groundCast);
-            Modules.Add(roofCast);
-
-            Modules.Add(Sound);
-
-            Modules.Add(cameraRig);
-
-            Modules.Add(look);
-            Modules.Add(lean);
-            Modules.Add(headbob);
-        }
-
-        protected virtual void Update()
-        {
-            if (initilized)
-                UpdateInternal();
-        }
-        /// <summary>
-        /// will be called from update if the controller has been initilized
-        /// </summary>
-        protected virtual void UpdateInternal()
-        {
-            //first update the input module
-            UpdateInputModule();
-
-            //then check the ground's state
-            groundCast.Process();
-
-            //then process the states module
-            states.Process();
-
-            //then the jump module
-            jump.Process();
-
-            //then process the movement
-            movement.Process();
-
-            //processing sound
-            sound.Process();
-
-            //process look
-            look.Process();
-
-            //process lean
-            lean.Process();
-
-            //process headbob
-            headbob.Process();
-
-            //and finaly apply the camera rig's coordinates which will get set from the above processed modules
-            cameraRig.ApplyCoordinates();
-        }
-        /// <summary>
-        /// method that will update the input module, can be overriden to defined when to update the input module example: dont update the input module when pausing
-        /// </summary>
-        protected virtual void UpdateInputModule()
-        {
-            InputModule.UpdateInput();
-        }
-
-        /// <summary>
-        /// enum to define when to initilize the controller
-        /// </summary>
-        public enum ControllerInitMode
-        {
-            Awake, Start, Custom
-        }
-
-        [Serializable]
-        public abstract class BaseModuleManager : MoeLinkedModuleManager<FPController.Module, FPController>
-        {
-            public FPController Controller { get; protected set; }
-
-            public virtual void Init()
-            {
-                ForAll(InitModule);
-            }
-            protected virtual void InitModule(FPController.Module module)
-            {
-                module.Init();
-            }
-        }
-
-        /// <summary>
-        /// the base module to any controller module, contains properties to all modules and values defined in the controller its self
-        /// and should be initilized using the Init method
-        /// </summary>
-        [Serializable]
-        public class BaseModule : MoeLinkedModule<FPController>
-        {
-            public FPController Controller { get { return Link; } }
-
-            public Transform Transform { get { return Collider.transform; } }
-            public FPControllerInputModule InputModule { get { return Controller.InputModule; } }
-            public CapsuleCollider Collider { get { return Controller.Collider; } }
-            public Rigidbody Rigidbody { get { return Controller.Rigidbody; } }
-
-            public virtual bool OnGround { get { return Controller.OnGround; } }
-
-            public FPController.ConstraintsData Constraints { get { return Controller.Constraints; } }
-            public FPController.MovementModule Movement { get { return Controller.Movement; } }
-            public FPController.StatesModule States { get { return Controller.States; } }
-            public FPController.JumpModule Jump { get { return Controller.Jump; } }
-            public FPController.GroundCastModule GroundCast { get { return Controller.GroundCast; } }
-            public FPController.RoofCastModule RoofCast { get { return Controller.RoofCast; } }
-            public FPController.SoundModule Sound { get { return Controller.Sound; } }
-
-            public FPController.CameraRigModule CameraRig { get { return Controller.CameraRig; } }
-            public FPController.LookModule Look { get { return Controller.Look; } }
-
-            public virtual void Init()
-            {
-
-            }
-        }
-
         /// <summary>
         /// the base constraints data, mostly has booleans that can be toggled to restrict and allow certian actions
         /// </summary>
@@ -400,6 +83,10 @@ namespace ARFC
             protected bool prone = true;
             public virtual bool Prone { get { return Control && prone; } protected set { prone = value; } }
 
+            [SerializeField]
+            protected bool slide = true;
+            public virtual bool Slide { get { return Control && slide; } protected set { slide = value; } }
+
             [Space]
             [SerializeField]
             protected bool look = true;
@@ -414,6 +101,13 @@ namespace ARFC
             public virtual bool HeadBob { get { return Control && headBob; } protected set { headBob = value; } }
         }
 
+        /// <summary>
+        /// movement data, will calculate and apply velocity based on current state and speed
+        /// </summary>
+        [Space()]
+        [SerializeField]
+        protected FPController.MovementModule movement;
+        public FPController.MovementModule Movement { get { return movement; } }
         /// <summary>
         /// base movement module, processes the speed, gravity, in air movement, jump force, ...
         /// </summary>
@@ -522,6 +216,10 @@ namespace ARFC
                 [SerializeField]
                 float deAcceleration = 3f;
                 public float DeAcceleration { get { return deAcceleration; } }
+
+                [SerializeField]
+                protected bool updateDirection = false;
+                public bool UpdateDirection { get { return updateDirection; } }
             }
 
             [SerializeField]
@@ -532,6 +230,9 @@ namespace ARFC
             public Vector3 Right { get; protected set; }
             protected virtual void UpdateDirections()
             {
+                if (CurrentState == ControllerState.Sliding && !Slide.UpdateDirection)
+                    return;
+
                 Forward = Transform.forward;
                 Right = Transform.right;
             }
@@ -564,17 +265,18 @@ namespace ARFC
 
                 if (Constraints.Move)
                 {
-                    speed.Update(InputModule.Movement);
+                    if(CurrentState == ControllerState.Sliding)
+                        speed.Update(Slide.VectorInput);
+                    else
+                        speed.Update(InputModule.Movement);
 
-                    velocity = Vector3.forward * Speed.Vector.y + Vector3.right * Speed.Vector.x;
+                    velocity = Forward * Speed.Vector.y + Right * Speed.Vector.x;
 
                     if (velocity.magnitude > Speed.Current.Max)
                         velocity = velocity.normalized * Speed.Current.Max;
                 }
                 else
                     velocity = Vector3.zero;
-
-                velocity = Transform.TransformDirection(velocity);
 
                 velocity = Vector3.ProjectOnPlane(velocity, GroundCast.Normal);
 
@@ -601,7 +303,6 @@ namespace ARFC
                 velocity = Rigidbody.velocity;
                 var y = velocity.y;
 
-                velocity = Transform.InverseTransformDirection(velocity);
                 velocity.y = 0f;
 
                 velocity = Vector3.MoveTowards(velocity, Vector3.zero, inAir.DeAcceleration * Time.deltaTime);
@@ -610,13 +311,15 @@ namespace ARFC
                 {
                     speed.UpdateVector(InputModule.Movement * inAir.Control);
 
-                    velocity += (Vector3.forward * Speed.Vector.y + Vector3.right * Speed.Vector.x) * inAir.Control;
+                    if (inAir.UpdateDirection)
+                        UpdateDirections();
+
+                    velocity += (Transform.forward * Speed.Vector.y + Transform.right * Speed.Vector.x) * inAir.Control;
 
                     if (velocity.magnitude > Speed.Current.Max)
                         velocity = velocity.normalized * Speed.Current.Max;
                 }
 
-                velocity = Transform.TransformDirection(velocity);
                 velocity.y = y;
 
                 if (Jump.Power.Value == 0f)
@@ -645,7 +348,12 @@ namespace ARFC
             }
         }
 
-        #region States
+        /// <summary>
+        /// controller's state data (crouching, sprinting, ...) will controller and apply state transitions
+        /// </summary>
+        [SerializeField]
+        protected FPController.StatesModule states;
+        public FPController.StatesModule States { get { return states; } }
         /// <summary>
         /// the base states module, will define all of the controller's sates (crouch, sprinting, ...) and process input to transition between those states using its nested Traverser module
         /// </summary>
@@ -659,16 +367,30 @@ namespace ARFC
             public ControllerStateData StartingStateData { get { return GetData(startingState); } }
 
             [SerializeField]
-            ControllerStateData walking = new ControllerStateData(1.8f, 0.35f, 3.5f);
-            public ControllerStateData Walking { get { return walking; } }
+            ControllerStateData walk = new ControllerStateData(1.8f, 0.35f, 3.5f);
+            public ControllerStateData Walk { get { return walk; } }
 
             [SerializeField]
-            ControllerStateData sprint = new ControllerStateData(1.8f, 0.35f, 7);
-            public ControllerStateData Sprint { get { return sprint; } }
-            //defines the kind of input to handle sprinting
-            [SerializeField]
-            protected ButtonInputMode sprintInput = ButtonInputMode.Hold;
-            public ButtonInputMode SprintInput { get { return sprintInput; } }
+            protected SprintData sprint;
+            public SprintData Sprint { get { return sprint; } }
+            [Serializable]
+            public class SprintData
+            {
+                [SerializeField]
+                protected float speed = 7;
+                public float Speed { get { return speed; } }
+
+                public ControllerStateData State { get; protected set; }
+                public void SetState(ControllerStateData walkState)
+                {
+                    State = new ControllerStateData(walkState.Height, walkState.Radius, speed, ControllerState.Sprinting);
+                }
+
+                //defines the kind of input to handle sprinting
+                [SerializeField]
+                protected ButtonInputMode input = ButtonInputMode.Hold;
+                public ButtonInputMode Input { get { return input; } set { input = value; } }
+            }
 
             [SerializeField]
             ControllerStateData crouch = new ControllerStateData(1f, 0.35f, 1f);
@@ -677,10 +399,6 @@ namespace ARFC
             [SerializeField]
             ControllerStateData prone = new ControllerStateData(0.4f, 0.2f, 0.5f);
             public ControllerStateData Prone { get { return prone; } }
-
-            [SerializeField]
-            ControllerStateData custom;
-            public ControllerStateData Custom { get { return custom; } set { custom = value; } }
 
             [SerializeField]
             FPController.StatesModule.TraverserModule traverser;
@@ -706,6 +424,17 @@ namespace ARFC
                     protected set
                     {
                         lerp.Value = value;
+                    }
+                }
+                public float DefaultLerpDelta { get; protected set; }
+                public float? OverrideLerpDelta
+                {
+                    set
+                    {
+                        if (value == null)
+                            lerp.Delta = DefaultLerpDelta;
+                        else
+                            lerp.Delta = value.Value;
                     }
                 }
 
@@ -741,6 +470,12 @@ namespace ARFC
                 /// </summary>
                 protected ControllerStateData target;
                 public ControllerStateData Target { get { return target; } }
+                public virtual void UpdateTarget()
+                {
+                    target = States.GetData(State);
+
+                    UpdateCurrent();
+                }
 
                 /// <summary>
                 /// Controller state of the target state, which is considered the current state
@@ -750,6 +485,8 @@ namespace ARFC
                 public override void Init()
                 {
                     base.Init();
+
+                    DefaultLerpDelta = lerp.Delta;
 
                     previous = current = target = States.StartingStateData;
                 }
@@ -884,19 +621,18 @@ namespace ARFC
             }
             public override void Init()
             {
-                SetDataState();
+                InitStates();
 
                 base.Init();
 
                 traverser.Init();
             }
-            protected virtual void SetDataState()
+            protected virtual void InitStates()
             {
-                walking.State = ControllerState.Walking;
-                sprint.State = ControllerState.Sprinting;
+                walk.State = ControllerState.Walking;
+                sprint.SetState(walk);
                 crouch.State = ControllerState.Crouching;
                 prone.State = ControllerState.Proning;
-                custom.State = ControllerState.Custom;
             }
 
             public virtual void Process()
@@ -921,63 +657,87 @@ namespace ARFC
 
                 }
             }
-            bool sprintLock = false;
-            public virtual bool ProcessSprint()
+
+            public bool SprintLock { get; protected set; }
+            protected virtual bool ProcessSprint()
             {
                 if (InputModule.Sprint)
                 {
-                    if (sprintInput == ButtonInputMode.Hold)
+                    if (!SprintLock)
                     {
-                        if (Constraints.Sprint && traverser.State != ControllerState.Sprinting && OnGround)
+                        if (sprint.Input == ButtonInputMode.Hold)
                         {
-                            traverser.GoTo(ControllerState.Sprinting);
+                            if (Constraints.Sprint && traverser.State != ControllerState.Sprinting && OnGround)
+                            {
+                                SprintStart();
+
+                                return true;
+                            }
+                        }
+                        else if (sprint.Input == ButtonInputMode.Toggle)
+                        {
+                            if (traverser.State == ControllerState.Sprinting)
+                                SprintEnd();
+                            else
+                                SprintStart();
+
+                            SprintLock = true;
 
                             return true;
                         }
-                    }
-                    else if (sprintInput == ButtonInputMode.Toggle && !sprintLock)
-                    {
-                        if (traverser.State == ControllerState.Sprinting)
-                            traverser.GoTo(ControllerState.Walking);
-                        else
-                            traverser.GoTo(ControllerState.Sprinting);
-
-                        sprintLock = true;
-
-                        return true;
                     }
                 }
                 else
                 {
-                    if (sprintInput == ButtonInputMode.Hold)
+                    if (sprint.Input == ButtonInputMode.Hold)
                     {
                         if (traverser.State == ControllerState.Sprinting)
                         {
-                            traverser.GoTo(ControllerState.Walking);
+                            SprintEnd();
 
                             return true;
                         }
                     }
-                    else if (sprintInput == ButtonInputMode.Toggle)
-                    {
-                        sprintLock = false;
-                    }
+
+                    SprintLock = false;
                 }
 
-                if (!Constraints.Sprint && traverser.State == ControllerState.Sprinting && sprintInput == ButtonInputMode.Toggle)
+                if (!Constraints.Sprint && traverser.State == ControllerState.Sprinting && sprint.Input == ButtonInputMode.Toggle)
                     traverser.GoTo(ControllerState.Walking);
 
                 return false;
             }
+            protected virtual void SprintStart()
+            {
+                if (Slide.Processing)
+                    Slide.End(ControllerState.Sprinting);
+                else
+                    traverser.GoTo(ControllerState.Sprinting);
+            }
+            protected virtual void SprintEnd()
+            {
+                traverser.GoTo(ControllerState.Walking);
+            }
+
             protected virtual bool ProcessCrouch()
             {
                 if (InputModule.Crouch)
                 {
-                    if (traverser.State == ControllerState.Crouching)
+                    if (CurrentState == ControllerState.Crouching)
                     {
                         traverser.GoTo(ControllerState.Walking);
 
                         return true;
+                    }
+                    else if(CurrentState == ControllerState.Sliding)
+                    {
+                        Slide.End(ControllerState.Sprinting);
+                    }
+                    else if(Constraints.Slide && traverser.State == ControllerState.Sprinting && OnGround)
+                    {
+                        SprintLock = true;
+
+                        Slide.Start();
                     }
                     else if (Constraints.Crouch)
                     {
@@ -989,6 +749,7 @@ namespace ARFC
 
                 return false;
             }
+
             protected virtual bool ProcessProne()
             {
                 if (InputModule.Prone)
@@ -1015,21 +776,23 @@ namespace ARFC
                 switch (state)
                 {
                     case ControllerState.Walking:
-                        return walking;
+                        return walk;
                     case ControllerState.Sprinting:
-                        return sprint;
+                        return sprint.State;
                     case ControllerState.Crouching:
                         return crouch;
                     case ControllerState.Proning:
                         return prone;
-                    case ControllerState.Custom:
-                        return custom;
+                    case ControllerState.Sliding:
+                        return Slide.StateData;
                 }
 
                 throw new ArgumentException("Controller State " + state.ToString() + " Not Defined");
             }
         }
-
+        
+        public ControllerState CurrentState { get { return states.Traverser.State; } }
+        public ControllerStateData CurrentStateData { get { return states.Traverser.Current; } }
         /// <summary>
         /// defines a state's data
         /// </summary>
@@ -1088,13 +851,17 @@ namespace ARFC
             }
 
 
-            public ControllerStateData(float height, float radius, float speed)
+            public ControllerStateData(float height, float radius, float speed) : this(height, radius, speed, ControllerState.Walking)
+            {
+                
+            }
+            public ControllerStateData(float height, float radius, float speed, ControllerState state)
             {
                 this.height = height;
                 this.radius = radius;
                 this.speed = speed;
 
-                State = ControllerState.Custom;
+                State = state;
             }
 
             public override bool Equals(object obj)
@@ -1126,12 +893,88 @@ namespace ARFC
             }
         }
 
-        /// <summary>
-        /// defines the states the controller can be in
-        /// </summary>
-        
-        #endregion
+        [SerializeField]
+        protected FPController.SlideModule slide;
+        public FPController.SlideModule Slide { get { return slide; } }
+        [Serializable]
+        public abstract class BaseSlideModule : FPController.Module
+        {
+            [SerializeField]
+            protected MaxSmoothValue power = new MaxSmoothValue(1.2f, 0.85f);
+            public MaxSmoothValue Power { get { return power; } }
 
+            [SerializeField]
+            [Tooltip("Defines The Scale To Multiply To The Value That Defines How Fast The Transition From One State To Another Will Be, Make Traversion Faster Or Slower")]
+            protected float stateTraverseMultiplier = 2f;
+            public float StateTraverseMultiplier { get { return stateTraverseMultiplier; } }
+
+            [SerializeField]
+            protected bool updateDirection = false;
+            public bool UpdateDirection { get { return updateDirection; } }
+
+            public ControllerStateData StateData { get; protected set; }
+            public float Speed { get; protected set; }
+
+            public Vector2 VectorInput { get; protected set; }
+
+            public virtual bool Processing { get { return power.Value > 0f; } }
+
+            public virtual void Start()
+            {
+                VectorInput = InputModule.Movement;
+                Speed = Movement.Speed.Current.Value;
+                power.SetValueToMax();
+
+                UpdateStateData();
+                States.Traverser.OverrideLerpDelta = States.Traverser.DefaultLerpDelta * stateTraverseMultiplier;
+                States.Traverser.GoTo(ControllerState.Sliding);
+            }
+
+            public virtual void UpdateStateData()
+            {
+                StateData = new ControllerStateData(States.Crouch.Height, States.Crouch.Radius, Speed * power.Value, ControllerState.Sliding);
+            }
+
+            public virtual void Process()
+            {
+                if(power.Value > 0f)
+                {
+                    if(OnGround)
+                    {
+                        power.MoveTowardsMin();
+
+                        UpdateStateData();
+                        States.Traverser.UpdateTarget();
+                    }
+
+                    if (power.Value <= 0f || !OnGround || CheckBlockingCollision())
+                        EndAction();
+                }
+            }
+
+            protected bool CheckBlockingCollision()
+            {
+                return Rigidbody.velocity.magnitude < 0.4f;
+            }
+
+            public virtual void End(ControllerState stateToTransitionTo)
+            {
+                power.Value = 0f;
+                States.Traverser.OverrideLerpDelta = null;
+                States.Traverser.GoTo(stateToTransitionTo);
+            }
+            protected virtual void EndAction()
+            {
+                End(ControllerState.Crouching);
+            }
+        }
+
+        /// <summary>
+        /// controls the controllers jump functionality and handles the jump input
+        /// </summary>
+        [SerializeField]
+        protected FPController.JumpModule jump;
+        public FPController.JumpModule Jump { get { return jump; } }
         /// <summary>
         /// the base jump module, handles the jump input and functionality
         /// </summary>
@@ -1217,9 +1060,13 @@ namespace ARFC
             {
                 if (InputModule.Jump)
                 {
-                    if (States.Traverser.State == ControllerState.Crouching || States.Traverser.State == ControllerState.Proning)
+                    if (CurrentState == ControllerState.Crouching || CurrentState == ControllerState.Proning)
                     {
                         States.Traverser.GoTo(ControllerState.Walking);
+                    }
+                    else if (CurrentState == ControllerState.Sliding)
+                    {
+                        Slide.End(ControllerState.Sprinting);
                     }
                     else if (CanDo)
                         Do();
@@ -1233,9 +1080,9 @@ namespace ARFC
             {
                 get
                 {
-                    if(Constraints.Jump)
+                    if (Constraints.Jump)
                     {
-                        if(!MaxedCount)
+                        if (!MaxedCount)
                         {
                             if (OnGround)
                                 return true;
@@ -1282,126 +1129,12 @@ namespace ARFC
             }
         }
 
-        #region Cast Modules
         /// <summary>
-        /// the base cast module, will act as a base class that holds & process raycasting related data & functionality
+        /// checks if the controller is on ground and the specifics of the ground (rigidbody, slope angle, ...)
         /// </summary>
-        [Serializable]
-        public abstract class BaseCastModule : FPController.Module
-        {
-            [SerializeField]
-            protected LayerMask mask = Physics.AllLayers;
-            public LayerMask Mask { get { return mask; } }
-
-            [SerializeField]
-            protected QueryTriggerInteraction triggerInteraction = QueryTriggerInteraction.Ignore;
-            public QueryTriggerInteraction TriggerInteraction { get { return triggerInteraction; } }
-
-            [SerializeField]
-            protected float checkRange = 0.15f;
-            public float CheckRange { get { return checkRange; } }
-
-            [SerializeField]
-            [Range(0f, 1f)]
-            protected float radiusScale = 0.5f;
-            public float RadiusScale { get { return radiusScale; } }
-            public float RadiusValue { get { return Collider.radius * radiusScale; } }
-
-            [SerializeField]
-            protected float startOffset = 0.1f;
-            public float StartOffset { get { return startOffset; } }
-            public Vector3 StartOffsetVector { get { return -Direction * startOffset; } }
-
-            [SerializeField]
-            protected Vector3 normal = Vector3.zero;
-            public Vector3 Normal { get { return normal; } }
-
-            /// <summary>
-            /// the rigidbody that was hit by the cast, null if none
-            /// </summary>
-            [SerializeField]
-            protected Rigidbody rigidbody;
-            new public Rigidbody Rigidbody { get { return rigidbody; } }
-
-            public abstract Vector3 BaseStart { get; }
-            public virtual Vector3 Start { get { return BaseStart + -Direction * (RadiusValue + startOffset); } }
-            public abstract Vector3 Direction { get; }
-
-            protected RaycastHit hit;
-            public RaycastHit Hit { get { return hit; } }
-
-            [SerializeField]
-            protected DebugData debug = new DebugData(Color.green);
-            [Serializable]
-            public struct DebugData
-            {
-                [SerializeField]
-                bool draw;
-                public bool Draw { get { return draw; } }
-
-                [SerializeField]
-                Color color;
-                public Color Color { get { return color; } }
-
-                public DebugData(Color color)
-                {
-                    draw = true;
-                    this.color = color;
-                }
-            }
-
-            public virtual bool Process()
-            {
-                if (debug.Draw)
-                    Debug.DrawLine(Start, Start + Direction * checkRange, debug.Color);
-
-                if (Physics.SphereCast(Start, Collider.radius * radiusScale, Direction, out hit, Mathf.Infinity, mask, triggerInteraction))
-                {
-                    if (ProcessHit())
-                        return true;
-                }
-
-                ProcessMiss();
-
-                return false;
-            }
-            protected virtual bool ProcessHit()
-            {
-                if (hit.distance <= checkRange + startOffset)
-                {
-                    normal = hit.normal;
-
-                    rigidbody = hit.collider.attachedRigidbody;
-
-                    SoundSurface soundSurface = hit.collider.GetComponent<SoundSurface>();
-                    if (soundSurface == null && rigidbody)
-                        soundSurface = rigidbody.GetComponent<SoundSurface>();
-
-                    if (soundSurface)
-                        Sound.OverrideStates = soundSurface.SoundData;
-                    else
-                    {
-                        TerrainSoundSurface terrainSoundSurface = hit.collider.GetComponent<TerrainSoundSurface>();
-
-                        if (terrainSoundSurface)
-                            Sound.OverrideStates = terrainSoundSurface.GetSoundsSet(Transform.position.x, Transform.position.z);
-                        else
-                            Sound.OverrideStates = null;
-                    }
-
-                    return true;
-                }
-
-                return false;
-            }
-            protected virtual void ProcessMiss()
-            {
-                normal = Vector3.up;
-                rigidbody = null;
-
-                Sound.OverrideStates = null;
-            }
-        }
+        [SerializeField]
+        protected FPController.GroundCastModule groundCast;
+        public FPController.GroundCastModule GroundCast { get { return groundCast; } }
         /// <summary>
         /// the base ground cast module, will process ground data and determine if the controller is grounded
         /// </summary>
@@ -1624,7 +1357,15 @@ namespace ARFC
                 this.positions = new PositionsData(position);
             }
         }
+        //is the controller on the ground ?
+        public virtual bool OnGround { get { return groundCast.Grounded; } }
 
+        /// <summary>
+        /// checks if the controller's head is hitting something
+        /// </summary>
+        [SerializeField]
+        protected FPController.RoofCastModule roofCast;
+        public FPController.RoofCastModule RoofCast { get { return roofCast; } }
         /// <summary>
         /// will check if the controller's head hits anything
         /// </summary>
@@ -1634,8 +1375,13 @@ namespace ARFC
             public override Vector3 BaseStart { get { return Transform.position + (Direction * Collider.height); } }
             public override Vector3 Direction { get { return Vector3.up; } }
         }
-        #endregion
 
+        /// <summary>
+        /// controls the sound of the controller (moving, jumping, ....)
+        /// </summary>
+        [SerializeField]
+        protected FPController.SoundModule sound;
+        public FPController.SoundModule Sound { get { return sound; } }
         /// <summary>
         /// processes controller sound
         /// </summary>
@@ -1660,6 +1406,19 @@ namespace ARFC
                 [SerializeField]
                 protected float stepTime;
                 public float StepTime { get { return stepTime; } }
+
+                public override void Init()
+                {
+                    base.Init();
+
+                    Controller.OnStateChangeStart += OnStateChanged;
+                }
+
+                protected virtual void OnStateChanged(ControllerState oldState, ControllerState newState)
+                {
+                    if(newState == ControllerState.Sliding)
+                        Controller.InvokeOnFootStep(PlayRandomSFX());
+                }
 
                 public virtual void Process()
                 {
@@ -1723,8 +1482,6 @@ namespace ARFC
                 }
             }
 
-            public ControllerState CurrentState { get { return States.Traverser.State; } }
-
             public override void SetLink(FPController link)
             {
                 base.SetLink(link);
@@ -1756,6 +1513,13 @@ namespace ARFC
             }
         }
 
+        /// <summary>
+        /// defines the camera rig (pivot & camera), and also a coordinates variable for both pivot & camera that can be modified by other modules and get's applied last
+        /// </summary>
+        [Space()]
+        [SerializeField]
+        protected FPController.CameraRigModule cameraRig;
+        public FPController.CameraRigModule CameraRig { get { return cameraRig; } }
         /// <summary>
         /// the camera rig module, will handle camera related data & functionality
         /// </summary>
@@ -1817,6 +1581,12 @@ namespace ARFC
             }
         }
 
+        /// <summary>
+        /// defines the look data & functionality (sensitivity, smoothnes, invert axis, ...)
+        /// </summary>
+        [SerializeField]
+        protected FPController.LookModule look;
+        public FPController.LookModule Look { get { return look; } }
         /// <summary>
         /// handles the controller looking
         /// </summary>
@@ -1962,6 +1732,12 @@ namespace ARFC
         }
 
         /// <summary>
+        /// controls the leaning data & functionality
+        /// </summary>
+        [SerializeField]
+        protected FPController.LeanModule lean;
+        public FPController.LeanModule Lean { get { return lean; } }
+        /// <summary>
         /// processes the lean functionality
         /// </summary>
         [Serializable]
@@ -2070,6 +1846,12 @@ namespace ARFC
         }
 
         /// <summary>
+        /// controls the headbob data & functionality based on current state defined from a headbob states asset
+        /// </summary>
+        [SerializeField]
+        protected FPController.HeadbobModule headbob;
+        public FPController.HeadbobModule Headbob { get { return headbob; } }
+        /// <summary>
         /// head bob data & functionality
         /// </summary>
         [Serializable]
@@ -2166,6 +1948,373 @@ namespace ARFC
             }
         }
 
+        //the current input modulator
+        [SerializeField]
+        protected FPControllerInputModulator inputModulator;
+        public FPControllerInputModulator InputModulator { get { return inputModulator; } }
+        //Current input module
+        public FPControllerInputModule InputModule { get; protected set; }
+        //the rigidbody attached to the controller
+        public Rigidbody Rigidbody { get; protected set; }
+        //the capsule collider attached to the contoller
+        public CapsuleCollider Collider { get; protected set; }
+
+        #region Events
+        /// <summary>
+        /// multiple events that are pretty self explanitory, some are used internaly by modules to comunicate
+        /// </summary>
+        public event Action OnLeftGround;
+        internal virtual void InvokeOnLeftGround()
+        {
+            if (OnLeftGround != null)
+                OnLeftGround();
+        }
+
+        public event Action<ControllerLandingData> OnLanded;
+        internal virtual void InvokeOnLanded(ControllerLandingData data)
+        {
+            if (OnLanded != null)
+                OnLanded(data);
+        }
+
+        public event Action OnJumpStart;
+        internal virtual void InvokeOnJumpStart()
+        {
+            InvokeOnLeftGround();
+
+            if (OnJumpStart != null)
+                OnJumpStart();
+        }
+
+        public event Action OnJumpEnd;
+        internal virtual void InvokeOnJumpEnd()
+        {
+            if (OnJumpEnd != null)
+                OnJumpEnd();
+        }
+
+        public delegate void StateChangeDelegate(ControllerState oldState, ControllerState newState);
+        public event StateChangeDelegate OnStateChangeStart;
+        internal virtual void InvokeOnStateChangeStart(ControllerState oldState, ControllerState newState)
+        {
+            if (OnStateChangeStart != null)
+                OnStateChangeStart(oldState, newState);
+        }
+
+        public event Action<ControllerState> OnStateChangeEnd;
+        internal virtual void InvokeOnStateChangeEnd(ControllerState state)
+        {
+            if (OnStateChangeEnd != null)
+                OnStateChangeEnd(state);
+        }
+
+        public event Action<AudioClip> OnFootStep;
+        internal virtual void InvokeOnFootStep(AudioClip clip)
+        {
+            if (OnFootStep != null)
+                OnFootStep(clip);
+        }
+        #endregion
+
+        protected virtual void Awake()
+        {
+            if (initMode == ControllerInitMode.Awake)
+                Init();
+        }
+        protected virtual void Start()
+        {
+            if (initMode == ControllerInitMode.Start)
+                Init();
+        }
+
+        /// <summary>
+        /// the Init method Initilizes the controller's data (get current input module, get components like rigidbody & collider, ...)
+        /// </summary>
+        public virtual void Init()
+        {
+            initilized = true;
+
+            GetComponents();
+            GetInputModule();
+
+            InitModules();
+        }
+        /// <summary>
+        /// get the needed components (rigidbody, collider, ...)
+        /// </summary>
+        protected virtual void GetComponents()
+        {
+            Rigidbody = GetComponent<Rigidbody>();
+            Collider = GetComponent<CapsuleCollider>();
+        }
+        /// <summary>
+        /// get the current input module from the InputModulator
+        /// </summary>
+        protected virtual void GetInputModule()
+        {
+            InputModule = inputModulator.GetCurrentModule();
+        }
+        /// <summary>
+        /// initilizes the modules (jump, movement, lean, ...)
+        /// </summary>
+        protected virtual void InitModules()
+        {
+            Modules = new FPController.ModuleManager();
+
+            AddModule();
+
+            Modules.SetLinks(This);
+            Modules.Init();
+        }
+        protected virtual void AddModule()
+        {
+            Modules.Add(movement);
+            Modules.Add(states);
+            Modules.Add(slide);
+
+            Modules.Add(jump);
+
+            Modules.Add(groundCast);
+            Modules.Add(roofCast);
+
+            Modules.Add(Sound);
+
+            Modules.Add(cameraRig);
+
+            Modules.Add(look);
+            Modules.Add(lean);
+            Modules.Add(headbob);
+        }
+
+        protected virtual void Update()
+        {
+            if (initilized)
+                UpdateInternal();
+        }
+        /// <summary>
+        /// will be called from update if the controller has been initilized
+        /// </summary>
+        protected virtual void UpdateInternal()
+        {
+            //first update the input module
+            UpdateInputModule();
+
+            //then check the ground's state
+            groundCast.Process();
+
+            //then process the states module
+            states.Process();
+            slide.Process();
+
+            //then the jump module
+            jump.Process();
+
+            //then process the movement
+            movement.Process();
+
+            //processing sound
+            sound.Process();
+
+            //process look
+            look.Process();
+
+            //process lean
+            lean.Process();
+
+            //process headbob
+            headbob.Process();
+
+            //and finaly apply the camera rig's coordinates which will get set from the above processed modules
+            cameraRig.ApplyCoordinates();
+        }
+        /// <summary>
+        /// method that will update the input module, can be overriden to defined when to update the input module example: dont update the input module when pausing
+        /// </summary>
+        protected virtual void UpdateInputModule()
+        {
+            InputModule.UpdateInput();
+        }
+
+        /// <summary>
+        /// enum to define when to initilize the controller
+        /// </summary>
+        public enum ControllerInitMode
+        {
+            Awake, Start, Custom
+        }
+
+        [Serializable]
+        public abstract class BaseModuleManager : MoeLinkedModuleManager<FPController.Module, FPController>
+        {
+            public FPController Controller { get; protected set; }
+
+            public virtual void Init()
+            {
+                ForAll(InitModule);
+            }
+            protected virtual void InitModule(FPController.Module module)
+            {
+                module.Init();
+            }
+        }
+
+        /// <summary>
+        /// the base module to any controller module, contains properties to all modules and values defined in the controller its self
+        /// and should be initilized using the Init method
+        /// </summary>
+        [Serializable]
+        public class BaseModule : MoeLinkedModule<FPController>
+        {
+            public FPController Controller { get { return Link; } }
+
+            public Transform Transform { get { return Collider.transform; } }
+            public FPControllerInputModule InputModule { get { return Controller.InputModule; } }
+            public CapsuleCollider Collider { get { return Controller.Collider; } }
+            public Rigidbody Rigidbody { get { return Controller.Rigidbody; } }
+
+            public virtual bool OnGround { get { return Controller.OnGround; } }
+
+            public ControllerState CurrentState { get { return Controller.CurrentState; } }
+            public ControllerStateData CurrentStateData { get { return Controller.CurrentStateData; } }
+
+            public FPController.ConstraintsData Constraints { get { return Controller.Constraints; } }
+            public FPController.MovementModule Movement { get { return Controller.Movement; } }
+            public FPController.StatesModule States { get { return Controller.States; } }
+            public FPController.SlideModule Slide { get { return Controller.slide; } }
+            public FPController.JumpModule Jump { get { return Controller.Jump; } }
+            public FPController.GroundCastModule GroundCast { get { return Controller.GroundCast; } }
+            public FPController.RoofCastModule RoofCast { get { return Controller.RoofCast; } }
+            public FPController.SoundModule Sound { get { return Controller.Sound; } }
+
+            public FPController.CameraRigModule CameraRig { get { return Controller.CameraRig; } }
+            public FPController.LookModule Look { get { return Controller.Look; } }
+
+            public virtual void Init()
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// the base cast module, will act as a base class that holds & process raycasting related data & functionality
+        /// </summary>
+        [Serializable]
+        public abstract class BaseCastModule : FPController.Module
+        {
+            [SerializeField]
+            protected LayerMask mask = Physics.AllLayers;
+            public LayerMask Mask { get { return mask; } }
+
+            [SerializeField]
+            protected QueryTriggerInteraction triggerInteraction = QueryTriggerInteraction.Ignore;
+            public QueryTriggerInteraction TriggerInteraction { get { return triggerInteraction; } }
+
+            [SerializeField]
+            protected float checkRange = 0.15f;
+            public float CheckRange { get { return checkRange; } }
+
+            [SerializeField]
+            [Range(0f, 1f)]
+            protected float radiusScale = 0.5f;
+            public float RadiusScale { get { return radiusScale; } }
+            public float RadiusValue { get { return Collider.radius * radiusScale; } }
+
+            [SerializeField]
+            protected float startOffset = 0.1f;
+            public float StartOffset { get { return startOffset; } }
+            public Vector3 StartOffsetVector { get { return -Direction * startOffset; } }
+
+            [SerializeField]
+            protected Vector3 normal = Vector3.zero;
+            public Vector3 Normal { get { return normal; } }
+
+            /// <summary>
+            /// the rigidbody that was hit by the cast, null if none
+            /// </summary>
+            [SerializeField]
+            protected Rigidbody rigidbody;
+            new public Rigidbody Rigidbody { get { return rigidbody; } }
+
+            public abstract Vector3 BaseStart { get; }
+            public virtual Vector3 Start { get { return BaseStart + -Direction * (RadiusValue + startOffset); } }
+            public abstract Vector3 Direction { get; }
+
+            protected RaycastHit hit;
+            public RaycastHit Hit { get { return hit; } }
+
+            [SerializeField]
+            protected DebugData debug = new DebugData(Color.green);
+            [Serializable]
+            public struct DebugData
+            {
+                [SerializeField]
+                bool draw;
+                public bool Draw { get { return draw; } }
+
+                [SerializeField]
+                Color color;
+                public Color Color { get { return color; } }
+
+                public DebugData(Color color)
+                {
+                    draw = true;
+                    this.color = color;
+                }
+            }
+
+            public virtual bool Process()
+            {
+                if (debug.Draw)
+                    Debug.DrawLine(Start, Start + Direction * checkRange, debug.Color);
+
+                if (Physics.SphereCast(Start, Collider.radius * radiusScale, Direction, out hit, Mathf.Infinity, mask, triggerInteraction))
+                {
+                    if (ProcessHit())
+                        return true;
+                }
+
+                ProcessMiss();
+
+                return false;
+            }
+            protected virtual bool ProcessHit()
+            {
+                if (hit.distance <= checkRange + startOffset)
+                {
+                    normal = hit.normal;
+
+                    rigidbody = hit.collider.attachedRigidbody;
+
+                    SoundSurface soundSurface = hit.collider.GetComponent<SoundSurface>();
+                    if (soundSurface == null && rigidbody)
+                        soundSurface = rigidbody.GetComponent<SoundSurface>();
+
+                    if (soundSurface)
+                        Sound.OverrideStates = soundSurface.SoundData;
+                    else
+                    {
+                        TerrainSoundSurface terrainSoundSurface = hit.collider.GetComponent<TerrainSoundSurface>();
+
+                        if (terrainSoundSurface)
+                            Sound.OverrideStates = terrainSoundSurface.GetSoundsSet(Transform.position.x, Transform.position.z);
+                        else
+                            Sound.OverrideStates = null;
+                    }
+
+                    return true;
+                }
+
+                return false;
+            }
+            protected virtual void ProcessMiss()
+            {
+                normal = Vector3.up;
+                rigidbody = null;
+
+                Sound.OverrideStates = null;
+            }
+        }
+
         public enum ButtonInputMode
         {
             Hold, Toggle
@@ -2217,6 +2366,12 @@ namespace ARFC
             {
 
             }
+        }
+
+        [Serializable]
+        public partial class SlideModule : BaseSlideModule
+        {
+            
         }
 
         [Serializable]
@@ -2283,8 +2438,11 @@ namespace ARFC
         }
     }
 
+    /// <summary>
+    /// defines the states the controller can be in
+    /// </summary>
     public enum ControllerState
     {
-        Walking, Sprinting, Crouching, Proning, Custom
+        Walking, Sprinting, Crouching, Proning, Sliding
     }
 }

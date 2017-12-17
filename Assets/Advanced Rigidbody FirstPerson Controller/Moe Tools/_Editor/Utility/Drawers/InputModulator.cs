@@ -45,6 +45,8 @@ namespace Moe.Tools
                 SerializedProperty name = platformsList.main.GetPropertyOfIndex(index, "name");
                 SerializedProperty module = platformsList.main.GetPropertyOfIndex(index, "module");
 
+                GUIArea.ProgressLayout(ref rect);
+
                 name.stringValue = EditorGUI.TextField(GUIArea.ProgressLine(ref rect), "Name", name.stringValue);
 
                 module.objectReferenceValue = EditorGUI.ObjectField(GUIArea.ProgressLine(ref rect), platformsList.main.serializedProperty.displayName, module.objectReferenceValue, target.ModuleType, false);
@@ -57,6 +59,8 @@ namespace Moe.Tools
             void DrawPlatformsPreviewElement(Rect rect, int index, bool isActive, bool isFocused)
             {
                 SerializedProperty platform = platformsList.preview.GetArrayElement(index);
+
+                GUIArea.Progress(ref rect, GUIArea.LayoutOffset / 2);
 
                 EditorGUI.PropertyField(GUIArea.ProgressLine(ref rect), platform, new GUIContent("Platform " + (index + 1)));
             }

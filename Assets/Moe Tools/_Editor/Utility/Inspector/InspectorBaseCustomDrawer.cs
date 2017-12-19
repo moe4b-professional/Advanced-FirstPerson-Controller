@@ -21,7 +21,7 @@ using Random = UnityEngine.Random;
 namespace Moe.Tools
 {
     public class InspectorBaseCustomDrawer<TInspectedType> : InspectorBase<TInspectedType>
-        where TInspectedType : UnityEngine.Object
+        where TInspectedType : Object
     {
         public InspectorCustomGUI gui;
 

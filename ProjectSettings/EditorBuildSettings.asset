@@ -4,4 +4,7 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Advanced Rigidbody FirstPerson Controller/Extra/Scenes/Test Course.unity
+    guid: 8bb3a089508b2e74f8e059b54de57ca6

@@ -1,0 +1,2 @@
+Utilities used & included by most of my packages
+make sure only onse instance is avaliable in a project so no conflict happens.

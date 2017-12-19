@@ -1,0 +1,3 @@
+this asset uses a shared code library (Moe Tools), you'll need to import the Moe Tools package manually
+if no other instance was imported
+this procation is to avoid conflicts when using multiple Moe products

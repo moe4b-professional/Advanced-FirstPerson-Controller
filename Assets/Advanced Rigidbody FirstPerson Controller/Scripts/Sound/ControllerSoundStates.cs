@@ -22,8 +22,14 @@ using Moe.Tools;
 
 namespace ARFC
 {
+    public interface IControllerSoundStates : IControllerStatesDataTemplate<SoundSet>
+    {
+        SoundSet Jump { get; }
+        SoundSet Land { get; }
+    }
+
     [CreateAssetMenu(menuName = FPController.MenuPath + "Sound States")]
-    public class ControllerSoundStates : ControllerStatesScritableObjectBase<ControllerSoundStates.SetData>
+    public class ControllerSoundStates : ControllerStatesScriptableObjectTemplate<SoundSet>, IControllerSoundStates
     {
         [Space]
         [SerializeField]
@@ -31,19 +37,7 @@ namespace ARFC
         public SoundSet Jump { get { return jump; } }
 
         [SerializeField]
-        SoundSet landing;
-        public SoundSet Landing { get { return landing; } }
-
-        [Serializable]
-        public class SetData
-        {
-            [SerializeField]
-            float stepInterval = 1f;
-            public float StepInterval { get { return stepInterval; } }
-
-            [SerializeField]
-            SoundSet set;
-            public SoundSet Set { get { return set; } }
-        }
+        SoundSet land;
+        public SoundSet Land { get { return land; } }
     }
 }

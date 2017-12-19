@@ -9,24 +9,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d267a09aaebe6746a62e0f3dba3ecd2, type: 3}
-  m_Name: Sprinting
+  m_Name: Walk
   m_EditorClassIdentifier: 
   scale: 0.1
-  delta: 3
-  gravity: 6
+  delta: 1.75
+  gravity: 4
   curve:
+    serializedVersion: 2
     m_Curve:
-    - time: 0
+    - serializedVersion: 2
+      time: 0
       value: 0
       inSlope: -0.009001643
       outSlope: -0.009001643
       tangentMode: 0
-    - time: 0.4670769
+    - serializedVersion: 2
+      time: 0.4670769
       value: 0.9829085
       inSlope: 0.13000524
       outSlope: 0.13000524
       tangentMode: 34
-    - time: 1
+    - serializedVersion: 2
+      time: 1
       value: 0
       inSlope: -0.081003994
       outSlope: -0.081003994

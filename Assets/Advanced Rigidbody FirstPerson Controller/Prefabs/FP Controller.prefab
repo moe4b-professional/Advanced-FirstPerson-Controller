@@ -71,7 +71,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1130185499599356}
   m_LocalRotation: {x: -0, y: 0.70710665, z: -0, w: 0.70710695}
-  m_LocalPosition: {x: -2, y: 0, z: 12}
+  m_LocalPosition: {x: -5, y: 0, z: 24}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4626140961612734}
@@ -98,8 +98,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1602029856848964}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.84999996, z: 0}
+  m_LocalRotation: {x: 0.39474395, y: 0, z: 0, w: 0.9187912}
+  m_LocalPosition: {x: 0, y: 0.92978275, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4626140961612734}
@@ -277,7 +277,7 @@ MonoBehaviour:
   movement:
     speed:
       vector: {x: 0, y: 0}
-      current:
+      value:
         value: 0
         max: 0
       walk:
@@ -304,17 +304,29 @@ MonoBehaviour:
       height: 1.8
       radius: 0.35
       speed: 3.5
+      stepTime: 0.5
+      sounds: {fileID: 11400000, guid: e50c2617fb106c241b54562cfef1cb0b, type: 2}
+      headbob: {fileID: 11400000, guid: 5caa6b9bec02b684f82233c569ee1075, type: 2}
     sprint:
       speed: 7
+      stepTime: 0.3
+      sounds: {fileID: 11400000, guid: e50c2617fb106c241b54562cfef1cb0b, type: 2}
+      headbob: {fileID: 11400000, guid: a7a2dfcb6efe77849b6e3d15a7010400, type: 2}
       input: 1
     crouch:
       height: 1
       radius: 0.35
       speed: 1
+      stepTime: 0.8
+      sounds: {fileID: 11400000, guid: e50c2617fb106c241b54562cfef1cb0b, type: 2}
+      headbob: {fileID: 11400000, guid: e86a9e920ad895f4e99f6afd7559e5f2, type: 2}
     prone:
       height: 0.4
       radius: 0.2
       speed: 0.5
+      stepTime: 1
+      sounds: {fileID: 11400000, guid: e50c2617fb106c241b54562cfef1cb0b, type: 2}
+      headbob: {fileID: 11400000, guid: e422d5b15f4111d45aa29bcffd355377, type: 2}
     traverser:
       lerp:
         value: 0
@@ -323,6 +335,9 @@ MonoBehaviour:
       pivotScale: 0.5
       cameraOffset: 0.05
   slide:
+    stepTime: 0.4
+    sounds: {fileID: 11400000, guid: aa1939ec359a64f4f90bdb07960969b9, type: 2}
+    headbob: {fileID: 11400000, guid: 1c193a9c0fd2d5d4c8887186e9acc867, type: 2}
     power:
       value: 0
       delta: 0.85
@@ -341,12 +356,12 @@ MonoBehaviour:
   groundCast:
     mask:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 4294967039
     triggerInteraction: 1
     checkRange: 0.15
     radiusScale: 0.5
     startOffset: 0.1
-    normal: {x: 0.07974829, y: 0.99681497, z: 0}
+    normal: {x: 0, y: 0, z: 0}
     rigidbody: {fileID: 0}
     debug:
       draw: 1
@@ -360,7 +375,7 @@ MonoBehaviour:
   roofCast:
     mask:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 4294967039
     triggerInteraction: 1
     checkRange: 0.15
     radiusScale: 0.5
@@ -374,8 +389,9 @@ MonoBehaviour:
     source: {fileID: 82339567895202364}
     movement:
       stepTime: 0
-    defaultStates: {fileID: 11400000, guid: 2dc2b8a5e1a6221488027a60d630aa97, type: 2}
-    overrideStates: {fileID: 0}
+    defaultStates:
+      jump: {fileID: 11400000, guid: e50c2617fb106c241b54562cfef1cb0b, type: 2}
+      land: {fileID: 11400000, guid: e50c2617fb106c241b54562cfef1cb0b, type: 2}
   cameraRig:
     pivot: {fileID: 4626140961612734}
     camera: {fileID: 20939637700493432}
@@ -406,12 +422,12 @@ MonoBehaviour:
     alignScale: 0.8
     mask:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 4294967039
     triggerInteraction: 1
     offset: 0.1
   headbob:
     scale: 1
-    states: {fileID: 11400000, guid: 4127501edc3dac447b7f42bb2492d36e, type: 2}
+    overrideStates: {fileID: 0}
     offset: {x: 0, y: 0, z: 0}
   inputModulator: {fileID: 11400000, guid: 9e52d3c218d2e0944b3c79f7ca45c8e1, type: 2}
 --- !u!124 &124785858767598704

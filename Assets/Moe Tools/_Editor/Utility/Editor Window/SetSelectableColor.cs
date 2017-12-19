@@ -16,9 +16,7 @@ using UnityEditorInternal;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-using Moe.Tools;
-
-namespace Moe.GameFramework
+namespace Moe.Tools
 {
     public class SetSelectableColor : EditorWindow
     {

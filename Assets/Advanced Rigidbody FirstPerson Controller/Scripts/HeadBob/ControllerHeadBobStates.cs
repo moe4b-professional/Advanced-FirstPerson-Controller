@@ -20,8 +20,13 @@ using Object = UnityEngine.Object;
 
 namespace ARFC
 {
+    public interface IControllerHeadBobStates : IControllerStatesDataTemplate<HeadBobData>
+    {
+
+    }
+
     [CreateAssetMenu(menuName = HeadBobData.MenuPath + "States")]
-    public class ControllerHeadBobStates : ControllerStatesScritableObjectBase<HeadBobData>
+    public class ControllerHeadBobStates : ControllerStatesScriptableObjectTemplate<HeadBobData>, IControllerHeadBobStates
     {
 
     }

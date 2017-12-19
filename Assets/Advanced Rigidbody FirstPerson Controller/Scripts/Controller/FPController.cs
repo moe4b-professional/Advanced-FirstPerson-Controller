@@ -40,6 +40,22 @@ namespace ARFC
         protected bool initilized = false;
 
         public FPController.ModuleManager Modules { get; protected set; }
+        [Serializable]
+        public abstract class BaseModuleManager : MoeLinkedModuleManager<FPController.Module, FPController>
+        {
+            public FPController Controller { get { return Link; } }
+
+            public virtual void Init(FPController controller)
+            {
+                this.Link = controller;
+
+                ForAll(InitModule);
+            }
+            protected virtual void InitModule(FPController.Module module)
+            {
+                module.Init(Controller);
+            }
+        }
 
         /// <summary>
         /// controller constraints (move, jump, ...)
@@ -125,8 +141,10 @@ namespace ARFC
                 public Vector2 Vector { get { return vector; } }
 
                 [SerializeField]
-                protected MaxFloatValue current;
-                public MaxFloatValue Current { get { return current; } }
+                protected MaxFloatValue value;
+                public MaxFloatValue Value { get { return value; } }
+
+                public float Magnitude { get; protected set; }
 
                 [SerializeField]
                 protected FPController.MovementModule.SpeedData.SpeedAxisSmoothValue walk = new FPController.MovementModule.SpeedData.SpeedAxisSmoothValue(15f);
@@ -136,9 +154,9 @@ namespace ARFC
                 protected FPController.MovementModule.SpeedData.SpeedAxisSmoothValue strafe = new FPController.MovementModule.SpeedData.SpeedAxisSmoothValue(15f);
                 public FPController.MovementModule.SpeedData.SpeedAxisSmoothValue Strafe { get { return strafe; } }
 
-                public override void Init()
+                public override void Init(FPController controller)
                 {
-                    base.Init();
+                    base.Init(controller);
 
                     walk.SetController(Controller);
                     strafe.SetController(Controller);
@@ -159,8 +177,8 @@ namespace ARFC
                 }
                 public virtual void UpdateValue()
                 {
-                    current.Max = States.Traverser.Target.Speed;
-                    current.Value = States.Traverser.Current.Speed;
+                    value.Max = States.Traverser.TargetData.Speed;
+                    value.Value = States.Traverser.CurrentData.Speed;
                 }
                 public virtual void UpdateVector(Vector2 input)
                 {
@@ -169,6 +187,11 @@ namespace ARFC
 
                     vector.y = walk.Value;
                     vector.x = strafe.Value;
+
+                    if (vector.magnitude > value.Max)
+                        vector = vector.normalized * value.Max;
+
+                    Magnitude = vector.magnitude / value.Max;
                 }
 
                 [Serializable]
@@ -180,7 +203,7 @@ namespace ARFC
                         this.Controller = controller as FPController;
                     }
 
-                    public float MaxSpeed { get { return Controller.Movement.speed.current.Max; } }
+                    public float MaxSpeed { get { return Controller.Movement.speed.value.Max; } }
 
                     public override float Min { get { return -MaxSpeed; } }
                     public override float Max { get { return MaxSpeed; } }
@@ -237,18 +260,11 @@ namespace ARFC
                 Right = Transform.right;
             }
 
-            public override void SetLink(FPController link)
+            public override void Init(FPController controller)
             {
-                base.SetLink(link);
+                base.Init(controller);
 
-                speed.SetLink(link);
-            }
-
-            public override void Init()
-            {
-                base.Init();
-
-                speed.Init();
+                speed.Init(controller);
             }
 
             public virtual void Process()
@@ -265,15 +281,12 @@ namespace ARFC
 
                 if (Constraints.Move)
                 {
-                    if(CurrentState == ControllerState.Sliding)
+                    if (CurrentState == ControllerState.Sliding)
                         speed.Update(Slide.VectorInput);
                     else
                         speed.Update(InputModule.Movement);
 
                     velocity = Forward * Speed.Vector.y + Right * Speed.Vector.x;
-
-                    if (velocity.magnitude > Speed.Current.Max)
-                        velocity = velocity.normalized * Speed.Current.Max;
                 }
                 else
                     velocity = Vector3.zero;
@@ -282,11 +295,10 @@ namespace ARFC
 
                 #region Draw Direction
 #if UNITY_EDITOR
-                Vector3 direction = velocity.normalized;
-                if (direction == Vector3.zero)
-                    direction = Vector3.ProjectOnPlane(Transform.forward, GroundCast.Normal);
-
-                Debug.DrawRay(Transform.position, direction, Color.yellow);
+                if (velocity == Vector3.zero)
+                    Debug.DrawRay(Transform.position, Vector3.ProjectOnPlane(Transform.forward, GroundCast.Normal), Color.yellow);
+                else
+                    Debug.DrawRay(Transform.position, velocity.normalized, Color.yellow);
 #endif
                 #endregion
 
@@ -316,8 +328,8 @@ namespace ARFC
 
                     velocity += (Transform.forward * Speed.Vector.y + Transform.right * Speed.Vector.x) * inAir.Control;
 
-                    if (velocity.magnitude > Speed.Current.Max)
-                        velocity = velocity.normalized * Speed.Current.Max;
+                    if (velocity.magnitude > Speed.Value.Max)
+                        velocity = velocity.normalized * Speed.Value.Max;
                 }
 
                 velocity.y = y;
@@ -367,7 +379,7 @@ namespace ARFC
             public ControllerStateData StartingStateData { get { return GetData(startingState); } }
 
             [SerializeField]
-            ControllerStateData walk = new ControllerStateData(1.8f, 0.35f, 3.5f);
+            ControllerStateData walk = new ControllerStateData(1.8f, 0.35f, 3.5f, 0.5f, ControllerState.Walking);
             public ControllerStateData Walk { get { return walk; } }
 
             [SerializeField]
@@ -380,10 +392,22 @@ namespace ARFC
                 protected float speed = 7;
                 public float Speed { get { return speed; } }
 
+                [SerializeField]
+                protected float stepTime = 0.3f;
+                public float StepTime { get { return stepTime; } }
+
+                [SerializeField]
+                protected SoundSet sounds;
+                public SoundSet Sounds { get { return sounds; } }
+
+                [SerializeField]
+                protected HeadBobData headbob;
+                public HeadBobData Headbob { get { return headbob; } }
+
                 public ControllerStateData State { get; protected set; }
                 public void SetState(ControllerStateData walkState)
                 {
-                    State = new ControllerStateData(walkState.Height, walkState.Radius, speed, ControllerState.Sprinting);
+                    State = new ControllerStateData(walkState.Height, walkState.Radius, speed, stepTime, sounds, headbob, ControllerState.Sprinting);
                 }
 
                 //defines the kind of input to handle sprinting
@@ -393,11 +417,11 @@ namespace ARFC
             }
 
             [SerializeField]
-            ControllerStateData crouch = new ControllerStateData(1f, 0.35f, 1f);
+            ControllerStateData crouch = new ControllerStateData(1f, 0.35f, 1f, 0.8f, ControllerState.Crouching);
             public ControllerStateData Crouch { get { return crouch; } }
 
             [SerializeField]
-            ControllerStateData prone = new ControllerStateData(0.4f, 0.2f, 0.5f);
+            ControllerStateData prone = new ControllerStateData(0.4f, 0.2f, 0.5f, 1f, ControllerState.Proning);
             public ControllerStateData Prone { get { return prone; } }
 
             [SerializeField]
@@ -456,46 +480,50 @@ namespace ARFC
                 /// <summary>
                 /// the previous state's data
                 /// </summary>
-                protected ControllerStateData previous;
-                public ControllerStateData Previous { get { return previous; } }
+                protected ControllerStateData previousData;
+                public ControllerStateData PreviousData { get { return previousData; } }
 
                 /// <summary>
                 /// the current state's data, a lerp resault from the previous and target using the lerpScale value
                 /// </summary>
-                protected ControllerStateData current;
-                public ControllerStateData Current { get { return current; } }
+                protected ControllerStateData currentData;
+                public ControllerStateData CurrentData { get { return currentData; } }
 
                 /// <summary>
                 /// the target state's data
                 /// </summary>
-                protected ControllerStateData target;
-                public ControllerStateData Target { get { return target; } }
+                protected ControllerStateData targetData;
+                public ControllerStateData TargetData { get { return targetData; } }
                 public virtual void UpdateTarget()
                 {
-                    target = States.GetData(State);
+                    targetData = States.GetData(Current);
 
                     UpdateCurrent();
                 }
 
                 /// <summary>
+                /// Controller State Of The Previous Data
+                /// </summary>
+                public ControllerState Previous { get { return previousData.State; } }
+                /// <summary>
                 /// Controller state of the target state, which is considered the current state
                 /// </summary>
-                public ControllerState State { get { return target.State; } }
+                public ControllerState Current { get { return targetData.State; } }
 
-                public override void Init()
+                public override void Init(FPController controller)
                 {
-                    base.Init();
+                    base.Init(controller);
 
                     DefaultLerpDelta = lerp.Delta;
 
-                    previous = current = target = States.StartingStateData;
+                    previousData = currentData = targetData = States.StartingStateData;
                 }
 
                 public virtual void Process()
                 {
                     if (LerpValue != 1f)
                     {
-                        if (target.Height > previous.Height && RoofCast.Process())
+                        if (targetData.Height > previousData.Height && RoofCast.Process())
                             GoToSafeState();
 
                         if (LerpValue != 1f)
@@ -506,7 +534,7 @@ namespace ARFC
 
                             if (LerpValue == 1f)
                             {
-                                Controller.InvokeOnStateChangeEnd(State);
+                                Controller.InvokeOnStateChangeEnd(Current);
                             }
                         }
 
@@ -518,7 +546,7 @@ namespace ARFC
 
                 protected virtual void UpdateCurrent()
                 {
-                    current = ControllerStateData.Lerp(previous, target, lerp.Value);
+                    currentData = ControllerStateData.Lerp(previousData, targetData, lerp.Value);
                 }
 
                 /// <summary>
@@ -535,7 +563,7 @@ namespace ARFC
                 /// <param name="newState"></param>
                 public virtual void GoTo(ControllerStateData newState)
                 {
-                    GoTo(newState, ControllerStateData.InverseLerpHeight(target, newState, current));
+                    GoTo(newState, ControllerStateData.InverseLerpHeight(targetData, newState, currentData));
                 }
                 /// <summary>
                 /// internal method to transition to state based on a certian lerpScale, will be automatically calculated when using the above methods, the lerp scale will have any (mid transition) transition smooth
@@ -546,14 +574,14 @@ namespace ARFC
                 {
                     lerpScale = Mathf.Clamp01(lerpScale);
 
-                    previous = target;
-                    target = newState;
+                    previousData = targetData;
+                    targetData = newState;
 
                     lerp.Value = lerpScale;
 
                     UpdateCurrent();
 
-                    Controller.InvokeOnStateChangeStart(previous.State, target.State);
+                    Controller.InvokeOnStateChangeStart(previousData.State, targetData.State);
                 }
 
                 /// <summary>
@@ -561,9 +589,9 @@ namespace ARFC
                 /// </summary>
                 protected virtual void GoToSafeState()
                 {
-                    if (States.Crouch.Height < Current.Height)
+                    if (States.Crouch.Height < CurrentData.Height)
                         GoTo(ControllerState.Crouching);
-                    else if (States.Prone.Height < Current.Height)
+                    else if (States.Prone.Height < CurrentData.Height)
                         GoTo(ControllerState.Proning);
                 }
 
@@ -581,8 +609,8 @@ namespace ARFC
                 /// </summary>
                 protected virtual void ApplyCollider()
                 {
-                    Collider.height = current.Height;
-                    Collider.radius = current.Radius;
+                    Collider.height = currentData.Height;
+                    Collider.radius = currentData.Radius;
 
                     Collider.center = new Vector3(0f, Collider.height / 2f, 0f);
                 }
@@ -591,8 +619,8 @@ namespace ARFC
                 /// </summary>
                 protected virtual void ApplyCameraRig()
                 {
-                    CameraRig.Coordinates.Pivot.position = GetPivotPosition(Current);
-                    CameraRig.Coordinates.Camera.position = GetCameraPosition(Current);
+                    CameraRig.Coordinates.Pivot.position = GetPivotPosition(CurrentData);
+                    CameraRig.Coordinates.Camera.position = GetCameraPosition(CurrentData);
                 }
                 protected virtual Vector3 GetPivotPosition(ControllerStateData stateData)
                 {
@@ -605,7 +633,7 @@ namespace ARFC
 
                 public virtual FPController.CameraRigModule.CoordinatesData GetCurrentCameraCoordinates()
                 {
-                    return GetStateCameraCoordinates(current);
+                    return GetStateCameraCoordinates(currentData);
                 }
                 public virtual FPController.CameraRigModule.CoordinatesData GetStateCameraCoordinates(ControllerStateData stateData)
                 {
@@ -613,19 +641,13 @@ namespace ARFC
                 }
             }
 
-            public override void SetLink(FPController link)
-            {
-                base.SetLink(link);
-
-                traverser.SetLink(link);
-            }
-            public override void Init()
+            public override void Init(FPController controller)
             {
                 InitStates();
 
-                base.Init();
+                base.Init(controller);
 
-                traverser.Init();
+                traverser.Init(controller);
             }
             protected virtual void InitStates()
             {
@@ -667,7 +689,7 @@ namespace ARFC
                     {
                         if (sprint.Input == ButtonInputMode.Hold)
                         {
-                            if (Constraints.Sprint && traverser.State != ControllerState.Sprinting && OnGround)
+                            if (Constraints.Sprint && traverser.Current != ControllerState.Sprinting && OnGround)
                             {
                                 SprintStart();
 
@@ -676,7 +698,7 @@ namespace ARFC
                         }
                         else if (sprint.Input == ButtonInputMode.Toggle)
                         {
-                            if (traverser.State == ControllerState.Sprinting)
+                            if (traverser.Current == ControllerState.Sprinting)
                                 SprintEnd();
                             else
                                 SprintStart();
@@ -691,7 +713,7 @@ namespace ARFC
                 {
                     if (sprint.Input == ButtonInputMode.Hold)
                     {
-                        if (traverser.State == ControllerState.Sprinting)
+                        if (traverser.Current == ControllerState.Sprinting)
                         {
                             SprintEnd();
 
@@ -702,7 +724,7 @@ namespace ARFC
                     SprintLock = false;
                 }
 
-                if (!Constraints.Sprint && traverser.State == ControllerState.Sprinting && sprint.Input == ButtonInputMode.Toggle)
+                if (!Constraints.Sprint && traverser.Current == ControllerState.Sprinting && sprint.Input == ButtonInputMode.Toggle)
                     traverser.GoTo(ControllerState.Walking);
 
                 return false;
@@ -729,11 +751,11 @@ namespace ARFC
 
                         return true;
                     }
-                    else if(CurrentState == ControllerState.Sliding)
+                    else if (CurrentState == ControllerState.Sliding)
                     {
                         Slide.End(ControllerState.Sprinting);
                     }
-                    else if(Constraints.Slide && traverser.State == ControllerState.Sprinting && OnGround)
+                    else if (Constraints.Slide && traverser.Current == ControllerState.Sprinting && OnGround)
                     {
                         SprintLock = true;
 
@@ -754,7 +776,7 @@ namespace ARFC
             {
                 if (InputModule.Prone)
                 {
-                    if (traverser.State == ControllerState.Proning)
+                    if (traverser.Current == ControllerState.Proning)
                     {
                         traverser.GoTo(ControllerState.Walking);
 
@@ -790,9 +812,9 @@ namespace ARFC
                 throw new ArgumentException("Controller State " + state.ToString() + " Not Defined");
             }
         }
-        
-        public ControllerState CurrentState { get { return states.Traverser.State; } }
-        public ControllerStateData CurrentStateData { get { return states.Traverser.Current; } }
+
+        public ControllerState CurrentState { get { return states.Traverser.Current; } }
+        public ControllerStateData CurrentStateData { get { return states.Traverser.CurrentData; } }
         /// <summary>
         /// defines a state's data
         /// </summary>
@@ -812,6 +834,42 @@ namespace ARFC
             [SerializeField]
             float speed;
             public float Speed { get { return speed; } }
+
+            [SerializeField]
+            float stepTime;
+            public float StepTime { get { return stepTime; } }
+
+            [SerializeField]
+            SoundSet sounds;
+            public SoundSet Sounds { get { return sounds; } }
+
+            [SerializeField]
+            HeadBobData headbob;
+            public HeadBobData HeadBob { get { return headbob; } }
+
+            [Serializable]
+            public struct DependenciesData
+            {
+                [SerializeField]
+                float stepTime;
+                public float StepTime { get { return stepTime; } }
+
+                [SerializeField]
+                SoundSet sounds;
+                public SoundSet Sounds { get { return sounds; } }
+
+                [SerializeField]
+                HeadBobData headbob;
+                public HeadBobData Headbob { get { return headbob; } }
+
+                public DependenciesData(float stepTime)
+                {
+                    this.stepTime = stepTime;
+
+                    sounds = null;
+                    headbob = null;
+                }
+            }
 
             static ControllerStateData tempState = new ControllerStateData();
             public static ControllerStateData Lerp(ControllerStateData a, ControllerStateData b, float t)
@@ -850,18 +908,23 @@ namespace ARFC
                 return Mathf.InverseLerp(a.speed, b.speed, value.speed);
             }
 
-
-            public ControllerStateData(float height, float radius, float speed) : this(height, radius, speed, ControllerState.Walking)
+            public ControllerStateData(float height, float radius, float speed, float stepTime, ControllerState state) :
+                this(height, radius, speed, stepTime, null, null, state)
             {
-                
+
             }
-            public ControllerStateData(float height, float radius, float speed, ControllerState state)
+            public ControllerStateData(float height, float radius, float speed, float stepTime, SoundSet sounds, HeadBobData headbob, ControllerState state)
             {
                 this.height = height;
                 this.radius = radius;
                 this.speed = speed;
 
-                State = state;
+                this.stepTime = stepTime;
+                this.sounds = sounds;
+
+                this.headbob = headbob;
+
+                this.State = state;
             }
 
             public override bool Equals(object obj)
@@ -900,6 +963,18 @@ namespace ARFC
         public abstract class BaseSlideModule : FPController.Module
         {
             [SerializeField]
+            protected float stepTime = 0.4f;
+            public float StepTime { get { return stepTime; } }
+
+            [SerializeField]
+            protected SoundSet sounds;
+            public SoundSet Sounds { get { return sounds; } }
+
+            [SerializeField]
+            protected HeadBobData headbob;
+            public HeadBobData Headbob { get { return headbob; } }
+
+            [SerializeField]
             protected MaxSmoothValue power = new MaxSmoothValue(1.2f, 0.85f);
             public MaxSmoothValue Power { get { return power; } }
 
@@ -922,7 +997,7 @@ namespace ARFC
             public virtual void Start()
             {
                 VectorInput = InputModule.Movement;
-                Speed = Movement.Speed.Current.Value;
+                Speed = Movement.Speed.Value.Value;
                 power.SetValueToMax();
 
                 UpdateStateData();
@@ -932,14 +1007,14 @@ namespace ARFC
 
             public virtual void UpdateStateData()
             {
-                StateData = new ControllerStateData(States.Crouch.Height, States.Crouch.Radius, Speed * power.Value, ControllerState.Sliding);
+                StateData = new ControllerStateData(States.Crouch.Height, States.Crouch.Radius, Speed * power.Value, stepTime, sounds, headbob, ControllerState.Sliding);
             }
 
             public virtual void Process()
             {
-                if(power.Value > 0f)
+                if (power.Value > 0f)
                 {
-                    if(OnGround)
+                    if (OnGround)
                     {
                         power.MoveTowardsMin();
 
@@ -962,6 +1037,8 @@ namespace ARFC
                 power.Value = 0f;
                 States.Traverser.OverrideLerpDelta = null;
                 States.Traverser.GoTo(stateToTransitionTo);
+
+                Sound.Source.Stop();
             }
             protected virtual void EndAction()
             {
@@ -1202,9 +1279,9 @@ namespace ARFC
             public ControllerLandingData Landing { get { return landing; } }
             protected ControllerLandingData currentLanding;
 
-            public override void Init()
+            public override void Init(FPController controller)
             {
-                base.Init();
+                base.Init(controller);
 
                 Controller.OnJumpEnd += JumpEnd;
             }
@@ -1357,7 +1434,7 @@ namespace ARFC
                 this.positions = new PositionsData(position);
             }
         }
-        //is the controller on the ground ?
+        ///is the controller on the ground ?
         public virtual bool OnGround { get { return groundCast.Grounded; } }
 
         /// <summary>
@@ -1401,35 +1478,36 @@ namespace ARFC
             [Serializable]
             public class BaseMovementModule : FPController.Module
             {
-                public virtual ControllerSoundStates.SetData SetData { get { return Sound.CurrentStates.GetData(Sound.CurrentState); } }
+                public virtual float CurrentStepTime { get { return States.GetData(CurrentState).StepTime; } }
+                public virtual SoundSet CurrentSoundSet { get { return Sound.CurrentStates.GetData(CurrentState); } }
 
                 [SerializeField]
                 protected float stepTime;
                 public float StepTime { get { return stepTime; } }
 
-                public override void Init()
+                public override void Init(FPController controller)
                 {
-                    base.Init();
+                    base.Init(controller);
 
                     Controller.OnStateChangeStart += OnStateChanged;
                 }
 
                 protected virtual void OnStateChanged(ControllerState oldState, ControllerState newState)
                 {
-                    if(newState == ControllerState.Sliding)
+                    if (newState == ControllerState.Sliding)
                         Controller.InvokeOnFootStep(PlayRandomSFX());
                 }
 
                 public virtual void Process()
                 {
-                    var stepTimeDelta = Mathf.Clamp01(Movement.Speed.Vector.magnitude) * Time.deltaTime;
+                    var stepTimeDelta = Movement.Speed.Magnitude * Time.deltaTime;
 
                     if (stepTimeDelta == 0f || !OnGround)
                         stepTime = 0f;
                     else
                         stepTime += stepTimeDelta;
 
-                    if (stepTime >= SetData.StepInterval)
+                    if (stepTime >= CurrentStepTime)
                     {
                         stepTime = 0f;
 
@@ -1441,8 +1519,8 @@ namespace ARFC
                 {
                     AudioClip clip = null;
 
-                    if (SetData.Set)
-                        clip = SetData.Set.RandomClip;
+                    if (CurrentSoundSet)
+                        clip = CurrentSoundSet.RandomClip;
 
                     Sound.source.PlayOneShot(clip);
 
@@ -1450,50 +1528,58 @@ namespace ARFC
                 }
             }
 
-            /// <summary>
-            /// sound states define the sound clips for different states
-            /// </summary>
             [SerializeField]
-            protected ControllerSoundStates defaultStates;
-            public ControllerSoundStates DefaultStates { get { return defaultStates; } }
+            protected DefaultSoundStates defaultStates;
+            public DefaultSoundStates DefaultStates { get { return defaultStates; } }
+            [Serializable]
+            public class DefaultSoundStates : FPController.Module, IControllerSoundStates
+            {
+                public SoundSet Walk { get { return States.Walk.Sounds; } }
+
+                public SoundSet Sprint { get { return States.Sprint.Sounds; } }
+
+                public SoundSet Crouch { get { return States.Crouch.Sounds; } }
+
+                public SoundSet Prone { get { return States.Walk.Sounds; } }
+
+                new public SoundSet Slide { get { return base.Slide.Sounds; } }
+
+                [SerializeField]
+                SoundSet jump;
+                new public SoundSet Jump { get { return jump; } }
+
+                [SerializeField]
+                SoundSet land;
+                public SoundSet Land { get { return land; } }
+
+                SoundSet IControllerStatesDataTemplate<SoundSet>.GetData(ControllerState state)
+                {
+                    return ControllerStatesDataTemplate<SoundSet>.GetData(this, state);
+                }
+            }
 
             /// <summary>
             /// override the default states
             /// </summary>
-            [SerializeField]
-            protected ControllerSoundStates overrideStates;
-            public ControllerSoundStates OverrideStates
+            public ControllerSoundStates OverrideStates { get; set; }
+
+            public IControllerSoundStates CurrentStates
             {
                 get
                 {
-                    return overrideStates;
-                }
-                set
-                {
-                    overrideStates = value;
-                }
-            }
+                    if (OverrideStates)
+                        return OverrideStates;
 
-            public ControllerSoundStates CurrentStates
-            {
-                get
-                {
-                    return overrideStates == null ? defaultStates : overrideStates;
+                    return defaultStates;
                 }
             }
 
-            public override void SetLink(FPController link)
+            public override void Init(FPController controller)
             {
-                base.SetLink(link);
+                base.Init(controller);
 
-                movement.SetLink(link);
-            }
-
-            public override void Init()
-            {
-                base.Init();
-
-                movement.Init();
+                defaultStates.Init(controller);
+                movement.Init(controller);
             }
 
             public virtual void Process()
@@ -1508,8 +1594,8 @@ namespace ARFC
             }
             public virtual void PlayLandingSound()
             {
-                if (CurrentStates.Landing)
-                    source.PlayOneShot(CurrentStates.Landing.RandomClip);
+                if (CurrentStates.Land)
+                    source.PlayOneShot(CurrentStates.Land.RandomClip);
             }
         }
 
@@ -1535,9 +1621,9 @@ namespace ARFC
             public Camera Camera { get { return camera; } }
             public Transform CameraTransform { get { return camera.transform; } }
 
-            public override void Init()
+            public override void Init(FPController controller)
             {
-                base.Init();
+                base.Init(controller);
 
                 coordinates = States.Traverser.GetCurrentCameraCoordinates();
                 ApplyCoordinates();
@@ -1677,9 +1763,9 @@ namespace ARFC
                 }
             }
 
-            public override void Init()
+            public override void Init(FPController controller)
             {
-                base.Init();
+                base.Init(controller);
 
                 characterRotationTarget = Quaternion.Euler(0, Transform.eulerAngles.y, 0);
             }
@@ -1864,23 +1950,55 @@ namespace ARFC
             protected float scale = 1f;
             public float Scale { get { return scale; } }
 
+            public DefaultStatesData DefaultStates { get; protected set; }
+            public class DefaultStatesData : FPController.Module, IControllerHeadBobStates
+            {
+                HeadBobData IControllerStatesDataTemplate<HeadBobData>.Walk { get { return States.Walk.HeadBob; } }
+
+                HeadBobData IControllerStatesDataTemplate<HeadBobData>.Sprint { get { return States.Sprint.Headbob; } }
+
+                HeadBobData IControllerStatesDataTemplate<HeadBobData>.Crouch { get { return States.Crouch.HeadBob; } }
+
+                HeadBobData IControllerStatesDataTemplate<HeadBobData>.Prone { get { return States.Prone.HeadBob; } }
+
+                HeadBobData IControllerStatesDataTemplate<HeadBobData>.Slide { get { return Slide.Headbob; } }
+
+                HeadBobData IControllerStatesDataTemplate<HeadBobData>.GetData(ControllerState state)
+                {
+                    return ControllerStatesDataTemplate<HeadBobData>.GetData(this, state);
+                }
+
+                public DefaultStatesData(FPController controller)
+                {
+                    Init(controller);
+                }
+            }
             /// <summary>
             /// an asset that defines headbobing data per controller state
             /// </summary>
             [SerializeField]
-            protected ControllerHeadBobStates states;
-            new public ControllerHeadBobStates States { get { return states; } }
+            protected ControllerHeadBobStates overrideStates;
+            public ControllerHeadBobStates OverrideStates { get { return overrideStates; } }
+
+            public IControllerHeadBobStates CurrentStates
+            {
+                get
+                {
+                    if (overrideStates)
+                        return overrideStates;
+
+                    return DefaultStates;
+                }
+            }
 
             /// <summary>
             /// the previous headbob data
             /// </summary>
-            protected HeadBobData previous;
-            public HeadBobData Previous { get { return previous; } }
+            public HeadBobData Previous { get { return CurrentStates.GetData(States.Traverser.Previous); } }
             /// <summary>
             /// the current headbob data
             /// </summary>
-            protected HeadBobData current;
-            public HeadBobData Current { get { return current; } }
+            public HeadBobData Current { get { return CurrentStates.GetData(States.Traverser.Current); } }
 
             /// <summary>
             /// apply headbob to camera ?
@@ -1896,31 +2014,19 @@ namespace ARFC
             protected float time;
             public float Time { get { return time; } }
 
-            public override void Init()
+            public override void Init(FPController controller)
             {
-                base.Init();
+                base.Init(controller);
 
-                UpdateStates(base.States.StartingState, base.States.StartingState);
-
-                Controller.OnStateChangeStart += UpdateStates;
-            }
-            public virtual void UpdateStates(ControllerState previous, ControllerState current)
-            {
-                this.previous = GetData(previous);
-                this.current = GetData(current);
+                DefaultStates = new DefaultStatesData(controller);
             }
 
             public virtual void Process()
             {
                 if (Controller.OnGround)
-                    UpdateOffset(Movement.Speed.Vector.magnitude * (Constraints.HeadBob ? 1f : 0f), base.States.Traverser.Lerp.Value);
+                    UpdateOffset(Movement.Speed.Magnitude * (Constraints.HeadBob ? 1f : 0f), States.Traverser.Lerp.Value);
 
                 Apply(offset);
-            }
-
-            protected virtual void Apply(Vector3 offset)
-            {
-                CameraRig.Coordinates.Camera.position += offset;
             }
 
             protected virtual void UpdateOffset(float inputMagnitude, float lerpScale)
@@ -1934,17 +2040,22 @@ namespace ARFC
                 if (inputMagnitude == 0f)
                     time = Mathf.MoveTowards(time,
                         Mathf.RoundToInt(time),
-                        Mathf.Lerp(previous.Gravity, current.Gravity, lerpScale) * UnityEngine.Time.deltaTime);
+                        Mathf.Lerp(Previous.Gravity, Current.Gravity, lerpScale) * UnityEngine.Time.deltaTime);
                 else
                     time += inputMagnitude *
-                        Mathf.Lerp(previous.Delta, current.Delta, lerpScale);
+                        Mathf.Lerp(Previous.Delta, Current.Delta, lerpScale);
 
-                offset.y = (previous.Evaluate(time) * (scale * (lerpScale * -1 + 1))) + (current.Evaluate(time) * scale * lerpScale);
+                offset.y = (Previous.Evaluate(time) * (scale * (lerpScale * -1 + 1))) + (Current.Evaluate(time) * scale * lerpScale);
+            }
+
+            protected virtual void Apply(Vector3 offset)
+            {
+                CameraRig.Coordinates.Camera.position += offset;
             }
 
             public virtual HeadBobData GetData(ControllerState state)
             {
-                return states.GetData(state);
+                return overrideStates.GetData(state);
             }
         }
 
@@ -2063,8 +2174,7 @@ namespace ARFC
 
             AddModule();
 
-            Modules.SetLinks(This);
-            Modules.Init();
+            Modules.Init(This);
         }
         protected virtual void AddModule()
         {
@@ -2143,21 +2253,6 @@ namespace ARFC
             Awake, Start, Custom
         }
 
-        [Serializable]
-        public abstract class BaseModuleManager : MoeLinkedModuleManager<FPController.Module, FPController>
-        {
-            public FPController Controller { get; protected set; }
-
-            public virtual void Init()
-            {
-                ForAll(InitModule);
-            }
-            protected virtual void InitModule(FPController.Module module)
-            {
-                module.Init();
-            }
-        }
-
         /// <summary>
         /// the base module to any controller module, contains properties to all modules and values defined in the controller its self
         /// and should be initilized using the Init method
@@ -2189,9 +2284,9 @@ namespace ARFC
             public FPController.CameraRigModule CameraRig { get { return Controller.CameraRig; } }
             public FPController.LookModule Look { get { return Controller.Look; } }
 
-            public virtual void Init()
+            public virtual void Init(FPController controller)
             {
-
+                SetLink(controller);
             }
         }
 
@@ -2371,7 +2466,7 @@ namespace ARFC
         [Serializable]
         public partial class SlideModule : BaseSlideModule
         {
-            
+
         }
 
         [Serializable]

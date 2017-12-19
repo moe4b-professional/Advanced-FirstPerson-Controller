@@ -4,7 +4,6 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Moe.GameFramework;
 using UnityEngine.EventSystems;
 
 using UnityEditor;

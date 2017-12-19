@@ -3,14 +3,11 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Moe.GameFramework;
 using UnityEngine.EventSystems;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
-using Moe.Tools;
 
 namespace Moe.Tools
 {

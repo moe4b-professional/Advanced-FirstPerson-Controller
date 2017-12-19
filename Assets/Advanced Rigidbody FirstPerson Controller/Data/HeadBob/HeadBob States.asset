@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e617845891365f447988aba5874b039b, type: 3}
   m_Name: HeadBob States
   m_EditorClassIdentifier: 
-  standing: {fileID: 11400000, guid: 5caa6b9bec02b684f82233c569ee1075, type: 2}
+  walk: {fileID: 11400000, guid: 5caa6b9bec02b684f82233c569ee1075, type: 2}
   sprint: {fileID: 11400000, guid: a7a2dfcb6efe77849b6e3d15a7010400, type: 2}
   crouch: {fileID: 11400000, guid: e86a9e920ad895f4e99f6afd7559e5f2, type: 2}
   prone: {fileID: 11400000, guid: e422d5b15f4111d45aa29bcffd355377, type: 2}

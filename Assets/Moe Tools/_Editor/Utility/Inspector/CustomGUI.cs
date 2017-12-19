@@ -39,6 +39,15 @@ namespace Moe.Tools
                 Dictionary.Add(name, action);
             }
 
+            public void Add(SerializedProperty property, Action action)
+            {
+                Add(property.name, (SerializedProperty argument) => action());
+            }
+            public void Add(SerializedProperty property, Action<SerializedProperty> action)
+            {
+                Dictionary.Add(property.name, action);
+            }
+
             public void Remove(string name)
             {
                 if (Contains(name))

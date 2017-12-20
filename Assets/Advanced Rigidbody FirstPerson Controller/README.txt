@@ -10,6 +10,6 @@ that integrates with this asset.
 Changelog:
 v1.2:
 -Added Sliding (Sprint & Crouch To Slide).
--Tidied Up The Package (Added Docs, Cleaned The Test Course, Added Controls Info UI)
+-Tidied Up The Package (Added API, Cleaned The Test Course, Added Controls Info UI)
 v1.1:
 -Moved All Controller's Modules Inside The FP Controller Class.

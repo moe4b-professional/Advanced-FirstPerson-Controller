@@ -44,10 +44,10 @@ namespace Moe.Tools
 
         public virtual void Process()
         {
-            AssetDatabase.ExportPackage(MoeTools.Editor.ToUnityPath(source), ExtendedFileName, ExportFlags);
-
             if (File.Exists(DestinationFilePath))
                 File.Delete(DestinationFilePath);
+
+            AssetDatabase.ExportPackage(MoeTools.Editor.ToUnityPath(source), ExtendedFileName, ExportFlags);
 
             File.Move(ExtendedFileName, DestinationFilePath);
 

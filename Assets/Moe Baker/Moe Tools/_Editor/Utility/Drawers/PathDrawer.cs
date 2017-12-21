@@ -41,13 +41,25 @@ namespace Moe.Tools
 
         public string Title { get; set; }
 
+        public const string LocalPathName = "LOCAL";
+
         public virtual void Draw()
         {
             EditorGUILayout.BeginHorizontal();
             {
                 EditorGUIUtility.labelWidth = 80f;
 
-                Path = EditorGUILayout.TextField(Property.displayName, Path);
+                if (Path == string.Empty)
+                {
+                    string tempPath = EditorGUILayout.TextField(Property.displayName, LocalPathName);
+
+                    if (tempPath == LocalPathName)
+                        Path = "";
+                    else
+                        Path = tempPath;
+                }
+                else
+                    Path = EditorGUILayout.TextField(Property.displayName, Path);
 
                 if (GUILayout.Button("Select Path"))
                     DrawSelect();

@@ -39,7 +39,7 @@ namespace Moe.Tools
 
                 string newPath = absolutepath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).Replace(ProjectPath, "");
 
-                if (newPath[0] == Path.DirectorySeparatorChar)
+                if (newPath.Length > 0 && newPath[0] == Path.DirectorySeparatorChar)
                     newPath = newPath.Remove(0, 1);
 
                 return newPath;

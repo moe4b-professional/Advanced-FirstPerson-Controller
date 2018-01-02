@@ -35,12 +35,18 @@ namespace ARFC
             Controller = FindObjectOfType<FPController>();
             Debug.Assert(Controller);
 
-            InputModule = Controller.InputModule as FPControllerKeyInput;
-            if (InputModule == null)
-                throw new ArgumentException(GetType().Name + " Only Works If The Character Has An FPControllerKeyInput Module, But A Module Of Type " + Controller.InputModule.GetType().Name + " Was Detected Instead");
-
             Label = GetComponent<Text>();
             Debug.Assert(Label);
+
+            InputModule = Controller.InputModule as FPControllerKeyInput;
+            if (InputModule == null)
+            {
+                Debug.LogWarning(GetType().Name + " Only Works If The Character Has An FPControllerKeyInput Module, But A Module Of Type " + Controller.InputModule.GetType().Name + " Was Detected Instead");
+
+                Label.text = "INVALID INPUT MODULE";
+
+                yield break;
+            }
 
             SetText();
         }

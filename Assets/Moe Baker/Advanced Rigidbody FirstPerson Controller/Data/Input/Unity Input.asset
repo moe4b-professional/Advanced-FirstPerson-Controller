@@ -8,8 +8,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46a46b2692024a345a7bb1f2cf9bc1f9, type: 3}
-  m_Name: FPController Key Input
+  m_Script: {fileID: 11500000, guid: 88435e684d9c5b44d8ec6c61d2acf949, type: 3}
+  m_Name: Unity Input
   m_EditorClassIdentifier: 
   movement: {x: 0, y: 0}
   look: {x: 0, y: 0}
@@ -18,19 +18,10 @@ MonoBehaviour:
   sprint: 0
   crouch: 0
   prone: 0
-  walkAxis:
-    positive: 119
-    negative: 115
-    value: 0
-  strafeAxis:
-    positive: 100
-    negative: 97
-    value: 0
-  leanAxis:
-    positive: 101
-    negative: 113
-    value: 0
-  jumpKey: 32
-  sprintKey: 304
-  crouchKey: 99
-  proneKey: 306
+  walkAxis: Vertical
+  strafeAxis: Horizontal
+  leanAxis: Lean
+  jumpButton: Jump
+  sprintButton: Sprint
+  crouchButton: Crouch
+  proneButton: Prone

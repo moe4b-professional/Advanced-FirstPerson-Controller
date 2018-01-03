@@ -36,6 +36,27 @@ namespace ARFC
         public string LeanAxis { get { return leanAxis; } }
 
         [SerializeField]
+        protected LookAxisData lookAxis = new LookAxisData("Look");
+        public LookAxisData LookAxis { get { return lookAxis; } }
+        [Serializable]
+        public struct LookAxisData
+        {
+            [SerializeField]
+            string x;
+            public string X { get { return x; } }
+
+            [SerializeField]
+            string y;
+            public string Y { get { return y; } }
+
+            public LookAxisData(string axisName)
+            {
+                x = axisName + " X";
+                y = axisName + " Y";
+            }
+        }
+
+        [SerializeField]
         string jumpButton = "Jump";
         public string JumpButton { get { return jumpButton; } }
 
@@ -58,8 +79,8 @@ namespace ARFC
 
             lean = Input.GetAxisRaw(leanAxis);
 
-            look.x = Input.GetAxis("Mouse X");
-            look.y = Input.GetAxis("Mouse Y");
+            look.x = Input.GetAxis(lookAxis.X);
+            look.y = Input.GetAxis(lookAxis.Y);
 
             jump = Input.GetButtonDown(jumpButton);
             sprint = Input.GetButton(sprintButton);

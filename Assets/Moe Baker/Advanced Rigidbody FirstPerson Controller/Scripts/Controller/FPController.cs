@@ -219,8 +219,25 @@ namespace ARFC
             /// gravity multiplier that is to be multiplied by the Physics.gravity.y
             /// </summary>
             [SerializeField]
-            protected float gravityMultiplier = 1;
-            public float GravityMultiplier { get { return gravityMultiplier; } }
+            protected float extraGravity = 5f;
+            public float ExtraGravity
+            {
+                get
+                {
+                    return extraGravity;
+                }
+                set
+                {
+                    if (value < 0f)
+                    {
+                        Debug.LogWarning("Cannot Set Extra Gravity To " + value + ", Value Must Be Bigger Than Zero, Setting Value To Zero");
+
+                        value = 0f;
+                    }
+
+                    extraGravity = value;
+                }
+            }
 
             /// <summary>
             /// defines in air movement data
@@ -245,7 +262,6 @@ namespace ARFC
                 public bool UpdateDirection { get { return updateDirection; } }
             }
 
-            [SerializeField]
             protected Vector3 velocity;
             public Vector3 Velocity { get { return velocity; } }
 
@@ -345,7 +361,8 @@ namespace ARFC
             {
                 Rigidbody.useGravity = true;
 
-                velocity.y = Rigidbody.velocity.y * gravityMultiplier;
+                velocity.y = Rigidbody.velocity.y;
+                velocity.y -= extraGravity * Time.deltaTime;
             }
             protected virtual void AirJump()
             {

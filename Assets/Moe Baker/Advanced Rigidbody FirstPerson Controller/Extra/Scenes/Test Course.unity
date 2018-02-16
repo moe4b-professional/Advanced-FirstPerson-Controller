@@ -835,6 +835,11 @@ Prefab:
       propertyPath: initMode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114061722404776852, guid: 02dbd2dac67b859459ba82ddfb6dfcf6,
+        type: 2}
+      propertyPath: movement.gravityMultiplier
+      value: 1.2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 02dbd2dac67b859459ba82ddfb6dfcf6, type: 2}
   m_IsPrefabParent: 0

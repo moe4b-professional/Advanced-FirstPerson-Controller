@@ -70,14 +70,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1130185499599356}
-  m_LocalRotation: {x: -0, y: 0.70710665, z: -0, w: 0.70710695}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -5, y: 0, z: 24}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4626140961612734}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 90.00001, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!4 &4626140961612734
 Transform:
   m_ObjectHideFlags: 1
@@ -136,11 +136,11 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
 --- !u!54 &54970699631062852
 Rigidbody:
   m_ObjectHideFlags: 1
@@ -261,7 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c21a0d4b762c6e841975ea70de002d4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initMode: 1
+  initMode: 0
   constraints:
     control: 1
     move: 1
@@ -292,12 +292,11 @@ MonoBehaviour:
         angle: 0
         gravity: 15
         snap: 1
-    gravityMultiplier: 1
+    extraGravity: 5
     inAir:
       control: 0.15
       deAcceleration: 3
       updateDirection: 0
-    velocity: {x: 0, y: 0, z: 0}
   states:
     startingState: 0
     walk:

@@ -485,7 +485,17 @@ namespace ARFC
                 [SerializeField]
                 [Range(0f, 1f)]
                 float pivotScale = 0.5f;
-                public float PivotScale { get { return pivotScale; } }
+                public float PivotScale
+                {
+                    get
+                    {
+                        return pivotScale;
+                    }
+                    set
+                    {
+                        pivotScale = Mathf.Clamp01(pivotScale);
+                    }
+                }
 
                 /// <summary>
                 /// will lower the camera & pivot by the current value, so the camera wont by right at the top of the collider

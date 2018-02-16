@@ -99,7 +99,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1602029856848964}
   m_LocalRotation: {x: 0.39474395, y: 0, z: 0, w: 0.9187912}
-  m_LocalPosition: {x: 0, y: 0.92978275, z: 0}
+  m_LocalPosition: {x: 0, y: 0.92978275, z: 20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4626140961612734}
@@ -396,11 +396,11 @@ MonoBehaviour:
     camera: {fileID: 20939637700493432}
     coordinates:
       pivot:
-        position: {x: 0, y: 0.84999996, z: 0}
-        rotation: {x: 0, y: 0, z: 0, w: 1}
+        position: {x: 0, y: 0, z: 0}
+        rotation: {x: 0, y: 0, z: 0, w: 0}
       camera:
-        position: {x: 0, y: 0.84999996, z: 0}
-        rotation: {x: 0.515038, y: 0, z: 0, w: -0.8571673}
+        position: {x: 0, y: 0, z: 0}
+        rotation: {x: 0, y: 0, z: 0, w: 0}
   look:
     modifiers:
       sensitivity: 5

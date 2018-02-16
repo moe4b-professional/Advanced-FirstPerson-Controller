@@ -359,15 +359,13 @@ namespace ARFC
             }
             protected virtual void AirFall()
             {
-                Rigidbody.useGravity = true;
-
                 velocity.y = Rigidbody.velocity.y;
-                velocity.y -= extraGravity * Time.deltaTime;
+
+                if(Rigidbody.useGravity)
+                    velocity.y -= extraGravity * Time.deltaTime;
             }
             protected virtual void AirJump()
             {
-                Rigidbody.useGravity = false;
-
                 velocity.y = Jump.Power.Value + Jump.StartVelocity;
             }
 

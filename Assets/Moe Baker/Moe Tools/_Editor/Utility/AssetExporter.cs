@@ -55,7 +55,7 @@ namespace Moe.Tools
         }
 
         [CustomEditor(typeof(AssetExporter))]
-        public class Inspector : InspectorBaseCustomDrawer<AssetExporter>
+        public class Inspector : MoeInspector<AssetExporter>
         {
             public PathDrawer Source { get; protected set; }
             public PathDrawer Destination { get; protected set; }
@@ -67,8 +67,8 @@ namespace Moe.Tools
                 Source = new PathDrawer(serializedObject.FindProperty("source"), PathDrawer.TargetType.Folder);
                 Destination = new PathDrawer(serializedObject.FindProperty("destination"), PathDrawer.TargetType.Folder);
 
-                gui.Overrides.Add(Source.Property, Source.Draw);
-                gui.Overrides.Add(Destination.Property, Destination.Draw);
+                CustomGUI.Overrides.Add(Source.Property, Source.Draw);
+                CustomGUI.Overrides.Add(Destination.Property, Destination.Draw);
             }
 
             public override void OnInspectorGUI()

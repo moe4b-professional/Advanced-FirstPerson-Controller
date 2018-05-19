@@ -19,7 +19,7 @@ using Random = UnityEngine.Random;
 namespace Moe.Tools
 {
     [Serializable]
-    public abstract class MaxValue<TData> : IRange<TData>
+    public abstract class MaxValue<TData> : IValueRange<TData>
     {
         [SerializeField]
         protected TData value;
@@ -49,7 +49,7 @@ namespace Moe.Tools
                 max = value;
             }
         }
-        TData IRange<TData>.Max { get { return max; } }
+        TData IValueRange<TData>.Max { get { return max; } }
 
         public virtual bool Full { get { return value.Equals(max); } }
         public virtual bool Empty { get { return value.Equals(Min); } }

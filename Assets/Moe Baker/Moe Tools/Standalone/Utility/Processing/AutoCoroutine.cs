@@ -28,32 +28,25 @@ namespace Moe.Tools
         public Func<IEnumerator> Function { get; protected set; }
 
         bool FirstRunCheck;
-        public bool Running
+        public bool IsRunning
         {
             get
             {
                 return Coroutine != null || FirstRunCheck;
             }
-            set
-            {
-                if (value)
-                {
-                    Start();
-                }
-                else
-                {
-                    End();
-                }
-            }
+        }
+        public virtual bool CheckIfRunning()
+        {
+            return IsRunning;
         }
 
         public void Start()
         {
-            if (Running)
-                End();
+            if (IsRunning)
+                Stop();
 
             FirstRunCheck = true;
-            Coroutine = Behaviour.StartCoroutine(Function());
+            Coroutine = Behaviour.StartCoroutine(Procedure());
         }
 
         IEnumerator Procedure()
@@ -62,18 +55,20 @@ namespace Moe.Tools
 
             yield return InternalCoroutine;
 
-            End();
+            Stop();
         }
 
-        public void End()
+        public void Stop()
         {
-            if (Coroutine != null)
-                Behaviour.StopCoroutine(Coroutine);
-                
             if (InternalCoroutine != null)
                 Behaviour.StopCoroutine(InternalCoroutine);
 
+            if (Coroutine != null)
+                Behaviour.StopCoroutine(Coroutine);
+
             FirstRunCheck = false;
+
+            InternalCoroutine = null;
             Coroutine = null;
         }
 

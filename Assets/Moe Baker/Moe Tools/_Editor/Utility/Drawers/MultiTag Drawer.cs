@@ -14,24 +14,22 @@ namespace Moe.Tools
     public partial class MultiTag
     {
         [CustomEditor(typeof(MultiTag))]
-        public class Inspector : InspectorBase<MultiTag>
+        public class Inspector : MoeInspector<MultiTag>
         {
-            InspectorList tags;
+            InspectorList elements;
 
             protected override void OnEnable()
             {
                 base.OnEnable();
 
-                tags = new InspectorList(serializedObject.FindProperty("tags"));
+                elements = new InspectorList(serializedObject.FindProperty("elements"));
+
+                CustomGUI.Overrides.Add(elements.serializedProperty, DrawElements);
             }
 
-            public override void OnInspectorGUI()
+            protected virtual void DrawElements()
             {
-                EditorGUILayout.Space();
-                tags.Draw();
-                EditorGUILayout.Space();
-
-                serializedObject.ApplyModifiedProperties();
+                elements.Draw();
             }
         }
     }

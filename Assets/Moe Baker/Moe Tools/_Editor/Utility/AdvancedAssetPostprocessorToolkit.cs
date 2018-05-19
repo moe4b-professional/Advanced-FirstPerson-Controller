@@ -158,7 +158,7 @@ namespace Moe.Tools
             }
 
             [CustomEditor(typeof(Settings), true, isFallback = true)]
-            public class Inspector : InspectorBaseCustomDrawer<Settings>
+            public class Inspector : MoeInspector<Settings>
             {
                 InspectorList pathsConstraints;
 
@@ -168,7 +168,7 @@ namespace Moe.Tools
 
                     pathsConstraints = new InspectorList(serializedObject.FindProperty("pathsConstraints"));
 
-                    gui.Overrides.Add(pathsConstraints.serializedProperty.name, DrawFoldersConstraints);
+                    CustomGUI.Overrides.Add(pathsConstraints.serializedProperty.name, DrawFoldersConstraints);
                 }
 
                 protected virtual void DrawFoldersConstraints()

@@ -10,9 +10,8 @@ namespace Moe.Tools
     public partial class TabButton
     {
         [CustomEditor(typeof(TabButton))]
-        public class Inspector : InspectorBase<TabButton>
+        public class Inspector : MoeInspector<TabButton>
         {
-            InspectorCustomGUI gui;
             SerializedProperty menu;
             public TabMenu MenuObject { get { return menu.objectReferenceValue as TabMenu; } }
 
@@ -24,9 +23,9 @@ namespace Moe.Tools
 
                 menu = serializedObject.FindProperty("menu");
 
-                gui = new InspectorCustomGUI(serializedObject);
-                gui.Overrides.Add(menu.name, DrawMenu);
-                gui.Overrides.Add("index", DrawIndex);
+                CustomGUI = new InspectorCustomGUI(serializedObject);
+                CustomGUI.Overrides.Add(menu.name, DrawMenu);
+                CustomGUI.Overrides.Add("index", DrawIndex);
 
                 InitIndex();
             }
@@ -37,15 +36,6 @@ namespace Moe.Tools
                     index = new ListPopup<TabMenu.Tab>(serializedObject.FindProperty("index"), MenuObject.Tabs, delegate (TabMenu.Tab tab) { return tab.Name; });
                 else
                     index = null;
-            }
-
-            public override void OnInspectorGUI()
-            {
-                EditorGUILayout.Space();
-
-                gui.Draw();
-
-                serializedObject.ApplyModifiedProperties();
             }
 
             protected virtual void DrawMenu()

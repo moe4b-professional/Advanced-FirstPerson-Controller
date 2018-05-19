@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a03a67a0918b3f743a15b9f847416d4a, type: 3}
+  m_Name: Default Grass Steps
+  m_EditorClassIdentifier: 
+  clips:
+  - {fileID: 8300000, guid: 2a2ee715f132f6143b748708a5f4b522, type: 3}
+  - {fileID: 8300000, guid: 2e927993a4d8b69488385406fc25f768, type: 3}
+  - {fileID: 8300000, guid: c4a7b8dcf0e98eb4f83c5949a58c779a, type: 3}
+  - {fileID: 8300000, guid: 2a5165a80866ab948967ab0d594607bb, type: 3}
+  - {fileID: 8300000, guid: 2f87400f0ead5264a98989d6e07b174a, type: 3}
+  - {fileID: 8300000, guid: 3a25fe14aab4cac45b4ad01d8a700787, type: 3}

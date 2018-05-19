@@ -41,9 +41,28 @@ namespace Moe.Tools
 
         public static readonly Coordinates Zero = new Coordinates(Vector3.zero, Quaternion.identity);
 
-        public Coordinates(Transform transform) : this(transform.position, transform.rotation)
+        public Coordinates(Transform transform) : this(transform, Space.World)
         {
 
+        }
+        public Coordinates(Transform transform, Space space)
+        {
+            switch (space)
+            {
+                case Space.World:
+                    {
+                        position = transform.position;
+                        rotation = transform.rotation;
+                    }
+                    break;
+
+                case Space.Self:
+                    {
+                        position = transform.localPosition;
+                        rotation = transform.localRotation;
+                    }
+                    break;
+            }
         }
         public Coordinates(Vector3 position, Quaternion rotation)
         {

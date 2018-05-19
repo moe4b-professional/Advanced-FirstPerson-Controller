@@ -13,7 +13,7 @@ namespace Moe.Tools
     public partial class TabMenu
     {
         [CustomEditor(typeof(TabMenu))]
-        public class Inspector : InspectorBase<TabMenu>
+        public class Inspector : MoeInspector<TabMenu>
         {
             ListPopup<Tab> index;
             InspectorList tabs;
@@ -23,14 +23,14 @@ namespace Moe.Tools
                 base.OnEnable();
 
                 index = new ListPopup<Tab>(serializedObject.FindProperty("index"), target.TabsNames);
+                CustomGUI.Overrides.Add(index.Property, DrawIndex);
 
                 tabs = new InspectorList(serializedObject.FindProperty("tabs"));
+                CustomGUI.Overrides.Add(tabs.serializedProperty, DrawTabs);
             }
 
-            public override void OnInspectorGUI()
+            protected virtual void DrawIndex()
             {
-                EditorGUILayout.Space();
-
                 EditorGUI.BeginChangeCheck();
                 index.Draw();
                 if (EditorGUI.EndChangeCheck())
@@ -39,10 +39,10 @@ namespace Moe.Tools
 
                     target.NavigateTo(index.Index);
                 }
-
+            }
+            protected virtual void DrawTabs()
+            {
                 tabs.Draw();
-
-                serializedObject.ApplyModifiedProperties();
             }
         }
     }

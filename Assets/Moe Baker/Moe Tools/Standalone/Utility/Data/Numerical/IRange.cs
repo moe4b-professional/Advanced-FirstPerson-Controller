@@ -18,18 +18,18 @@ using Random = UnityEngine.Random;
 
 namespace Moe.Tools
 {
-    public interface IRange<T>
+    public interface IValueRange<T>
     {
         T Min { get; }
         T Max { get; }
     }
 
-    public interface IIntRange : IRange<int>
+    public interface IIntRange : IValueRange<int>
     {
 
     }
 
-    public interface IFloatRange : IRange<float>
+    public interface IFloatRange : IValueRange<float>
     {
 
     }

@@ -21,7 +21,7 @@ namespace Moe.Tools
     {
         [CustomEditor(typeof(BoundsCalculator))]
         [CanEditMultipleObjects]
-        public class Inspector : InspectorBase<BoundsCalculator>
+        public class Inspector : MoeInspector<BoundsCalculator>
         {
             public override void OnInspectorGUI()
             {

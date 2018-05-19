@@ -18,7 +18,7 @@ namespace Moe.Tools
     public abstract partial class InputModulator
     {
         [CustomEditor(typeof(InputModulator), true, isFallback = true)]
-        public class Inspector : InspectorBaseCustomDrawer<InputModulator>
+        public class Inspector : MoeInspector<InputModulator>
         {
             DualInspectorList platformsList;
 
@@ -26,7 +26,7 @@ namespace Moe.Tools
             {
                 base.OnEnable();
 
-                gui.Overrides.Add("platforms", DrawPlatforms);
+                CustomGUI.Overrides.Add("platforms", DrawPlatforms);
 
                 platformsList = new DualInspectorList(serializedObject.FindProperty("platforms"));
 

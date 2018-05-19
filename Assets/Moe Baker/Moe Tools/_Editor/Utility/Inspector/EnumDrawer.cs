@@ -23,59 +23,58 @@ namespace Moe.Tools
     public class EnumDrawer<T>
         where T : IFormattable, IConvertible, IComparable
     {
-        public SerializedProperty property;
-        public string label;
+        public SerializedProperty Property { get; protected set; }
+        public string Label { get; set; }
 
         public T Value { get; protected set; }
 
-        string[] values;
+        public string[] Values { get; protected set; }
 
         public virtual void Draw()
         {
-            property.enumValueIndex = EditorGUILayout.Popup(label, property.enumValueIndex, property.enumDisplayNames);
+            Property.enumValueIndex = EditorGUILayout.Popup(Label, Property.enumValueIndex, Property.enumDisplayNames);
 
-            Value = MoeTools.Enum.Parse<T>(values[property.enumValueIndex]);
+            Value = MoeTools.Enum.Parse<T>(Values[Property.enumValueIndex]);
         }
 
         public EnumDrawer(SerializedProperty property)
         {
-            this.property = property;
-            this.label = property.displayName;
+            this.Property = property;
+            this.Label = property.displayName;
 
-            values = property.enumNames;
+            Values = property.enumNames;
         }
     }
 
-    public class PropertyDisplayEnumDrawer<T> : EnumDrawer<T>
+    public class EnumVisibiltyControllerDrawer<T> : EnumDrawer<T>
         where T : IFormattable, IConvertible, IComparable
     {
-        Dictionary<T, Action> Values;
+        Dictionary<T, Action> Draws;
 
         public virtual void Assign(T value, SerializedProperty property)
         {
-            Assign(value, () => DefaultValueDraw(property));
+            Assign(value, () => DrawDefault(property));
         }
-        public void Assign(T value, Action action)
+        public void Assign(T value, Action drawaAction)
         {
-            Values.Add(value, action);
+            Draws.Add(value, drawaAction);
         }
 
         public override void Draw()
         {
             base.Draw();
 
-            if (Values.ContainsKey(Value) && Values[Value] != null)
-                Values[Value]();
+            if (Draws.ContainsKey(Value) && Draws[Value] != null)
+                Draws[Value]();
         }
-
-        protected virtual void DefaultValueDraw(SerializedProperty property)
+        protected virtual void DrawDefault(SerializedProperty property)
         {
             EditorGUILayout.PropertyField(property, true);
         }
 
-        public PropertyDisplayEnumDrawer(SerializedProperty property) : base(property)
+        public EnumVisibiltyControllerDrawer(SerializedProperty property) : base(property)
         {
-            Values = new Dictionary<T, Action>();
+            Draws = new Dictionary<T, Action>();
         }
     }
 }

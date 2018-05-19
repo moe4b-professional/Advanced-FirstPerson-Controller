@@ -18,23 +18,26 @@ using Random = UnityEngine.Random;
 
 namespace Moe.Tools
 {
-    public interface IUITemplate
+    public class UITemplate<TData> : MonoBehaviour
     {
+        public TData Data { get; protected set; }
 
-    }
+        public virtual string LabelPrefix { get { return "-UI Template"; } }
 
-    public interface IUITemplate<TData>
-    {
-        void SetData(TData data);
-    }
+        public virtual void SetData(TData data)
+        {
+            this.Data = data;
 
-    public abstract class UITemplate : MonoBehaviour, IUITemplate
-    {
+            gameObject.name = GetLabel(data);
+        }
 
-    }
-
-    public abstract class UITemplate<TData> : UITemplate, IUITemplate<TData>
-    {
-        public abstract void SetData(TData data);
+        public virtual string GetLabel(TData data)
+        {
+            return GetLabelSuffix(data) + LabelPrefix;
+        }
+        public virtual string GetLabelSuffix(TData data)
+        {
+            return data.ToString();
+        }
     }
 }

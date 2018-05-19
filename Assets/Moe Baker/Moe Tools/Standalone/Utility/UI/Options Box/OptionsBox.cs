@@ -109,16 +109,6 @@ namespace Moe.Tools
             }
         }
 
-        public override void OnPointerDown(PointerEventData eventData)
-        {
-            base.OnPointerDown(eventData);
-
-            if (eventData.button == PointerEventData.InputButton.Left && CanGoForward)
-                Value++;
-            else if (eventData.button == PointerEventData.InputButton.Right && CanGoBackwards)
-                Value--;
-        }
-
         public virtual void SetValue(int newValue)
         {
             value = MoeTools.Math.ClampRewind(newValue, 0, options.Count - 1);

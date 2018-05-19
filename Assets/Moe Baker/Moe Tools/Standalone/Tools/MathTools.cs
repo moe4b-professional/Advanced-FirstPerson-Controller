@@ -53,6 +53,11 @@ namespace Moe.Tools
                 return value;
             }
 
+            public static float InvertScale(float value)
+            {
+                return (value * -1) + 1;
+            }
+
             public static float Vector2Angle(Vector2 vector2)
             {
                 return Mathf.Atan2(vector2.x, vector2.y) * Mathf.Rad2Deg;

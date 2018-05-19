@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -18,44 +19,24 @@ using Random = UnityEngine.Random;
 
 namespace Moe.Tools
 {
-    [Serializable]
-    public abstract class BaseUICreator
-    {
-
-    }
-
-    [Serializable]
-    public abstract class BaseUICreator<TInstance> : BaseUICreator
-    {
+	public class UICreator<TData, TTemplate>
+        where TTemplate : UITemplate<TData>
+	{
         [SerializeField]
         protected GameObject prefab;
-        public GameObject Prefab { get { return prefab; } set { prefab = value; } }
+        public GameObject Prefab { get { return prefab; } }
 
         [SerializeField]
-        protected RectTransform menu;
-        public RectTransform Menu { get { return menu; } set { menu = value; } }
+        protected RectTransform parent;
+        public RectTransform Parent { get { return parent; } }
 
-        protected virtual TInstance Create(Func<GameObject, TInstance> instanceConverter)
+        public virtual TTemplate Create(TData data)
         {
-            TInstance instance = instanceConverter(Object.Instantiate(prefab, menu, false));
+            var instance = Object.Instantiate(prefab, parent, false).GetComponent<TTemplate>();
 
-            EditInstance(ref instance);
+            instance.SetData(data);
 
             return instance;
         }
-
-        protected virtual void EditInstance(ref TInstance instance)
-        {
-
-        }
-    }
-
-    [Serializable]
-    public abstract class UICreator<TInstance> : BaseUICreator<TInstance>
-    {
-        new public virtual TInstance Create(Func<GameObject, TInstance> instanceConverter)
-        {
-            return base.Create(instanceConverter);
-        }
-    }
+	}
 }

@@ -14,11 +14,11 @@ namespace Moe.Tools
     public partial class OptionsBox
     {
         [CustomEditor(typeof(OptionsBox))]
-        public class Inspector : InspectorBaseCustomDrawer<OptionsBox>
+        public class Inspector : MoeInspector<OptionsBox>
         {
             ListPopup<string> value;
             InspectorList options;
-            PropertyDisplayEnumDrawer<Transition> transition;
+            EnumVisibiltyControllerDrawer<Transition> transition;
             SerializedProperty colors;
             SerializedProperty animations;
             SerializedProperty sprites;
@@ -31,7 +31,7 @@ namespace Moe.Tools
 
                 InitValue();
 
-                transition = new PropertyDisplayEnumDrawer<Transition>(serializedObject.FindProperty("m_Transition"));
+                transition = new EnumVisibiltyControllerDrawer<Transition>(serializedObject.FindProperty("m_Transition"));
                 colors = serializedObject.FindProperty("m_Colors");
                 animations = serializedObject.FindProperty("m_AnimationTriggers");
                 sprites = serializedObject.FindProperty("m_SpriteState");
@@ -39,14 +39,14 @@ namespace Moe.Tools
                 transition.Assign(Transition.Animation, animations);
                 transition.Assign(Transition.SpriteSwap, sprites);
 
-                gui.Ignores.Add(colors.name);
-                gui.Ignores.Add(animations.name);
-                gui.Ignores.Add(sprites.name);
+                CustomGUI.Ignores.Add(colors.name);
+                CustomGUI.Ignores.Add(animations.name);
+                CustomGUI.Ignores.Add(sprites.name);
 
-                gui.Overrides.Add(transition.property.name, DrawTransition);
+                CustomGUI.Overrides.Add(transition.Property.name, DrawTransition);
 
-                gui.Overrides.Add(options.serializedProperty.name, DrawOptions);
-                gui.Overrides.Add(value.Property.name, DrawValue);
+                CustomGUI.Overrides.Add(options.serializedProperty.name, DrawOptions);
+                CustomGUI.Overrides.Add(value.Property.name, DrawValue);
             }
 
             public override void OnInspectorGUI()
@@ -55,7 +55,7 @@ namespace Moe.Tools
 
                 EditorGUI.BeginChangeCheck();
                 {
-                    gui.Draw();
+                    CustomGUI.Draw();
                 }
                 if (EditorGUI.EndChangeCheck())
                 {

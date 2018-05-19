@@ -20,10 +20,10 @@ namespace Moe.Tools
 
         void Start()
         {
-            GetComponent<Button>().onClick.AddListener(LoadScene);
+            GetComponent<Button>().onClick.AddListener(Action);
         }
 
-        public void LoadScene()
+        public void Action()
         {
             SceneManager.LoadScene(scene.Name);
         }

@@ -21,9 +21,9 @@ namespace Moe.Tools
 {
     public class ListIndexer<TAccessor, TData>
     {
-        public Dictionary<TAccessor, int> Dictionary { get; protected set; }
+        public Dictionary<TAccessor, TData> Dictionary { get; protected set; }
 
-        public int this[TAccessor accessor]
+        public TData this[TAccessor accessor]
         {
             get
             {
@@ -39,7 +39,7 @@ namespace Moe.Tools
             return Dictionary.ContainsKey(name);
         }
 
-        public void Add(TAccessor accessor, int value)
+        public void Add(TAccessor accessor, TData value)
         {
             Dictionary.Add(accessor, value);
         }
@@ -53,15 +53,15 @@ namespace Moe.Tools
             Dictionary.Clear();
         }
 
-        public void Setup<T>(IList<T> list, Func<T, TAccessor> AccessorProvider)
+        public void Setup(IList<TData> list, Func<TData, TAccessor> AccessorProvider)
         {
             for (int i = 0; i < list.Count; i++)
-                Dictionary.Add(AccessorProvider(list[i]), i);
+                Dictionary.Add(AccessorProvider(list[i]), list[i]);
         }
 
         public ListIndexer()
         {
-            Dictionary = new Dictionary<TAccessor, int>();
+            Dictionary = new Dictionary<TAccessor, TData>();
         }
         public ListIndexer(IList<TData> list, Func<TData, TAccessor> AccessorProvider) : this()
         {

@@ -23,50 +23,164 @@ namespace Moe.Tools
 	{
         public static class Platform
         {
-            public static GameTargetPlatform Current
+            static GameTargetPlatform current = Init();
+            public static GameTargetPlatform Current { get { return current; } }
+
+            public static GameTargetPlatform Init()
             {
-                get
+                pc = new PCData();
+                mobile = new MobileData();
+                console = new ConsoleData();
+                web = new WebData();
+
+                return GetCurrent();
+            }
+            static GameTargetPlatform GetCurrent()
+            {
+                if (pc.IsCurrent)
+                    return GameTargetPlatform.PC;
+                else if (mobile.IsCurrent)
+                    return GameTargetPlatform.Mobile;
+                else if (console.IsCurrent)
+                    return GameTargetPlatform.Console;
+                else if (web.IsCurrent)
+                    return GameTargetPlatform.Web;
+                else
+                    return GameTargetPlatform.Unknown;
+            }
+
+            static PCData pc;
+            public static PCData PC { get { return pc; } }
+            public class PCData : Data
+            {
+                public PCData()
                 {
-                    if (Windows)
-                        return GameTargetPlatform.Windows;
-                    else if (Linux)
-                        return GameTargetPlatform.Linux;
-                    else if (OSX)
-                        return GameTargetPlatform.OSX;
-                    else
-                        return GameTargetPlatform.Unknown;
+                    RuntimePlatforms = new RuntimePlatform[]
+                    {
+                        RuntimePlatform.WindowsEditor,
+                        RuntimePlatform.WindowsPlayer,
+
+                        RuntimePlatform.OSXEditor,
+                        RuntimePlatform.OSXPlayer,
+
+                        RuntimePlatform.LinuxEditor,
+                        RuntimePlatform.LinuxPlayer,
+                    };
                 }
             }
 
-            public static bool Windows
+            static MobileData mobile;
+            public static MobileData Mobile { get { return mobile; } }
+            public class MobileData : Data
             {
-                get
+                public MobileData()
                 {
-                    return Application.platform == RuntimePlatform.WindowsEditor ||
-                        Application.platform == RuntimePlatform.WindowsPlayer;
+                    RuntimePlatforms = new RuntimePlatform[]
+                    {
+                        RuntimePlatform.Android,
+                        RuntimePlatform.IPhonePlayer,
+
+                        RuntimePlatform.TizenPlayer,
+                    };
                 }
             }
-            public static bool Linux
+
+            static ConsoleData console;
+            public static ConsoleData Console { get { return console; } }
+            public class ConsoleData : Data
             {
-                get
+                public ConsoleData()
                 {
-                    return Application.platform == RuntimePlatform.LinuxEditor ||
-                        Application.platform == RuntimePlatform.LinuxPlayer;
+                    RuntimePlatforms = new RuntimePlatform[]
+                    {
+                        RuntimePlatform.PS4,
+                        RuntimePlatform.XboxOne,
+                    };
                 }
             }
-            public static bool OSX
+
+            static WebData web;
+            public static WebData Web { get { return web; } }
+            public class WebData : Data
             {
-                get
+                public WebData()
                 {
-                    return Application.platform == RuntimePlatform.OSXEditor ||
-                        Application.platform == RuntimePlatform.OSXPlayer;
+                    RuntimePlatforms = new RuntimePlatform[]
+                    {
+                        RuntimePlatform.WebGLPlayer,
+                    };
                 }
             }
+
+            public static Data GetData(GameTargetPlatform targetPlatform)
+            {
+                switch (targetPlatform)
+                {
+                    case GameTargetPlatform.PC:
+                        return pc;
+
+                    case GameTargetPlatform.Mobile:
+                        return mobile;
+
+                    case GameTargetPlatform.Console:
+                        return console;
+                    case GameTargetPlatform.Web:
+                        return web;
+
+                    case GameTargetPlatform.Unknown:
+                        throw new ArgumentException("No Platform Data Specified For The Unknow Platform");
+                }
+
+                throw new ArgumentOutOfRangeException("No Platform Data Is Defined For " + targetPlatform.ToString());
+            }
+            public static RuntimePlatform[] GetRuntimePlatforms(GameTargetPlatform targetPlatform)
+            {
+                return GetData(targetPlatform).RuntimePlatforms;
+            }
+
+            public abstract class Data
+            {
+                public bool IsCurrent { get { return IsRuntimePlatform(Application.platform); } }
+
+                public virtual bool IsRuntimePlatform(RuntimePlatform runtimePlatform)
+                {
+                    return RuntimePlatforms.Contains(runtimePlatform);
+                }
+
+                public RuntimePlatform[] RuntimePlatforms { get; protected set; }
+            }
+        }
+    }
+
+    public static partial class MoeToolsExtensionMethods
+    {
+        public static MoeTools.Platform.Data GetData(this GameTargetPlatform targetPlatform)
+        {
+            return MoeTools.Platform.GetData(targetPlatform);
+        }
+        public static RuntimePlatform[] GetRuntimePlatforms(this GameTargetPlatform targetPlatform)
+        {
+            return MoeTools.Platform.GetRuntimePlatforms(targetPlatform);
         }
     }
 
     public enum GameTargetPlatform
     {
-        Windows, Linux, OSX, Unknown
+        PC, Mobile, Console, Web, Unknown
+    }
+
+    public enum MobileTargetPlatform
+    {
+        Android, IPhone, Tizen
+    }
+
+    public enum ConsoleTargetPlatform
+    {
+        XBOX, PlayStation
+    }
+
+    public enum PCTargetPlatform
+    {
+        Windows, Linux, OSX
     }
 }

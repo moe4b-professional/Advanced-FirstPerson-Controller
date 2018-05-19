@@ -23,7 +23,7 @@ namespace Moe.Tools
     public partial class CollisionIgnoreController
     {
         [CustomEditor(typeof(CollisionIgnoreController))]
-        public class Inspector : InspectorBase<CollisionIgnoreController>
+        public class Inspector : MoeInspector<CollisionIgnoreController>
         {
             InspectorList sets;
 
@@ -33,15 +33,13 @@ namespace Moe.Tools
 
                 sets = new InspectorList(serializedObject.FindProperty("sets"));
                 sets.elementHeight = 60f;
+
+                CustomGUI.Overrides.Add(sets.serializedProperty, DrawSets);
             }
 
-            public override void OnInspectorGUI()
+            protected virtual void DrawSets()
             {
-                EditorGUILayout.Space();
-
                 sets.Draw();
-
-                serializedObject.ApplyModifiedProperties();
             }
         }
     }

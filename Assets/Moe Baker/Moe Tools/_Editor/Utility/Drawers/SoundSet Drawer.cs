@@ -21,7 +21,7 @@ namespace Moe.Tools
 	public partial class SoundSet
 	{
 		[CustomEditor(typeof(SoundSet))]
-        public class Inspector : InspectorBaseCustomDrawer<SoundSet>
+        public class Inspector : MoeInspector<SoundSet>
         {
             InspectorList clips;
 
@@ -31,7 +31,7 @@ namespace Moe.Tools
 
                 clips = new InspectorList(serializedObject.FindProperty("clips"));
 
-                gui.Overrides.Add(clips.serializedProperty.name, DrawClips);
+                CustomGUI.Overrides.Add(clips.serializedProperty.name, DrawClips);
             }
 
             protected virtual void DrawClips()

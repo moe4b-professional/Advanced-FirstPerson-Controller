@@ -20,21 +20,42 @@ using Random = UnityEngine.Random;
 
 namespace Moe.Tools
 {
-    public static class PlayerPrefsX
+    [CreateAssetMenu(menuName = MoeTools.Constants.Paths.Tools + "Player Prefs X")]
+    public class PlayerPrefsX : ScriptableObjectResourceSingleton<PlayerPrefsX>
     {
-        public static Dictionary<string, object> Dictionary { get; private set; }
-        public static string SavePath
+        [SerializeField]
+        protected string fileName = "Player Prefs X.dat";
+        public string FileName { get { return fileName; } }
+        public string DirectoryPath
         {
             get
             {
-                return Path.Combine(Application.persistentDataPath, "Player Prefs X.dat");
+                if (Application.isEditor)
+                    return Application.dataPath;
+
+                return Application.persistentDataPath;
+            }
+        }
+        public string SavePath
+        {
+            get
+            {
+                return Path.Combine(DirectoryPath, fileName);
             }
         }
 
-        public static BinaryFormatter Formatter { get; private set; }
+        public Dictionary<string, object> Dictionary { get; private set; }
+
+        public BinaryFormatter Formatter { get; private set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        static void Start()
+        static void OnGameLoad()
+        {
+            if (InstanceAvailable)
+                Instance.Configure();
+        }
+
+        protected virtual void Configure()
         {
             Dictionary = new Dictionary<string, object>();
             Formatter = new BinaryFormatter();
@@ -45,14 +66,14 @@ namespace Moe.Tools
                 Save();
         }
 
-        public static void Save()
+        public virtual void Save()
         {
             using (FileStream fs = new FileStream(SavePath, FileMode.OpenOrCreate))
             {
                 Formatter.Serialize(fs, Dictionary);
             }
         }
-        public static void Load()
+        public virtual void Load()
         {
             using (FileStream fs = new FileStream(SavePath, FileMode.Open))
             {
@@ -73,44 +94,69 @@ namespace Moe.Tools
             }
         }
 
-        public static void Add(string ID, object obj)
+        public virtual object Get(string ID)
         {
-            if (CheckSerialization(obj))
-            {
-                if (Dictionary.ContainsKey(ID))
-                    Dictionary[ID] = obj;
-                else
-                    Dictionary.Add(ID, obj);
+            return Get<object>(ID);
+        }
+        public virtual T Get<T>(string ID)
+        {
+            if (!Dictionary.ContainsKey(ID))
+                throw new ArgumentException("ID " + ID.Enclose() + " Not Found Within Player Prefs X");
 
-                Save();
+            var value = Dictionary[ID];
+
+            if (value == null || value is T)
+            {
+                if (value == null && typeof(T).IsValueType)
+                    throw new InvalidCastException("Cannot Cast ID " + ID.Enclose() + " To Type " + 
+                        typeof(T).Name.Enclose() + " Because Value Types Cannot Be Assigned Null");
+
+                return (T)value;
             }
+
+            throw new InvalidCastException("Tried To Retrieve " + ID.Enclose() +
+                    " As A Type " + typeof(T).Name + " But The Current Value Is Of Type " + value.GetType().Name.Enclose());
+        }
+        public virtual T Get<T>(string ID, T defaultValue)
+        {
+            if (Dictionary.ContainsKey(ID))
+                return Get<T>(ID);
+            else
+                return defaultValue;
+        }
+
+        public virtual void Set(string ID, object obj)
+        {
+            if (!CheckSerialization(obj))
+                throw new ArgumentException("Cant Serialize Type " + obj.GetType().Name.Enclose() + ", Its Either Not Marked Serializable Or Has Memebers Not Marked Serializable");
+
+            if (IsDefined(ID))
+                Dictionary[ID] = obj;
+            else
+                Dictionary.Add(ID, obj);
+
+            Save();
+        }
+
+        public virtual object GetOrSet(string ID, object value)
+        {
+            return GetOrSet<object>(ID, value);
+        }
+        public virtual T GetOrSet<T>(string ID, T value)
+        {
+            if (IsDefined(ID))
+                return Get<T>(ID);
             else
             {
-                var type = obj.GetType();
+                Set(ID, value);
 
-                Debug.LogError("Cant Serialize Type (" + type.FullName + "), Its Either Not Marked Serializable Or Has Memebers Not Marked Serializable");
-            }
-        }
-        public static bool CheckSerialization(object obj)
-        {
-            if (!obj.GetType().IsSerializable) return false;
+                Save();
 
-            using (MemoryStream ms = new MemoryStream())
-            {
-                try
-                {
-                    Formatter.Serialize(ms, obj);
-
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
+                return value;
             }
         }
 
-        public static bool Remove(string ID)
+        public virtual bool Remove(string ID)
         {
             if (IsDefined(ID))
             {
@@ -128,33 +174,34 @@ namespace Moe.Tools
             }
         }
 
-        public static bool IsDefined(string ID)
+        public virtual bool CheckSerialization(object obj)
+        {
+            if (obj == null)
+                return true;
+
+            if (!obj.GetType().IsSerializable) return false;
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                try
+                {
+                    Formatter.Serialize(ms, obj);
+
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public virtual bool IsDefined(string ID)
         {
             return Dictionary.ContainsKey(ID);
         }
 
-        public static object Get(string ID)
-        {
-            return Get<object>(ID);
-        }
-        public static T Get<T>(string ID)
-        {
-            return Get(ID, default(T));
-        }
-        public static T Get<T>(string ID, T defaultValue)
-        {
-            if (Dictionary.ContainsKey(ID))
-                return (T)Dictionary[ID];
-            else
-                return defaultValue;
-        }
-
-        public static void Set(string ID, object obj)
-        {
-            Add(ID, obj);
-        }
-
-        public static void Clear()
+        public virtual void Clear()
         {
             Dictionary.Clear();
 

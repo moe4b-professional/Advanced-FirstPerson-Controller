@@ -19,8 +19,8 @@ using Random = UnityEngine.Random;
 
 namespace Moe.Tools
 {
-	public static partial class MoeTools
-	{
+    public static partial class MoeTools
+    {
         public static class String
         {
             public static List<string> SeperateViaChar(string text, char parseChar)
@@ -64,9 +64,9 @@ namespace Moe.Tools
 
                 for (int i = 0; i < text.Length; i++)
                 {
-                    if(char.IsUpper(text[i]))
+                    if (char.IsUpper(text[i]))
                     {
-                        if(i != text.Length - 1)
+                        if (i != text.Length - 1)
                         {
                             if (!char.IsUpper(text[i + 1]))
                                 resault += " ";
@@ -78,6 +78,18 @@ namespace Moe.Tools
 
                 return resault;
             }
+        }
+    }
+
+    public static partial class MoeToolsExtensionMethods
+    {
+        public static string Enclose(this string text)
+        {
+            return MoeTools.String.Enclose(text);
+        }
+        public static string Enclose(this string text, char start, char end)
+        {
+            return MoeTools.String.Enclose(text, start, end);
         }
     }
 }

@@ -155,6 +155,14 @@ namespace Moe.Tools
 
                 return false;
             }
+
+            public static void ForAllChildern(UTransform transform, Action<UTransform> action)
+            {
+                action(transform);
+
+                for (int i = 0; i < transform.childCount; i++)
+                    ForAllChildern(transform.GetChild(i), action);
+            }
         }
     }
 

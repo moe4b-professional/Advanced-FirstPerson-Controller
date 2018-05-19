@@ -13,4 +13,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   source: Assets\Moe Baker
   destination: 
-  fileName: Advanced Rigidbody FirstPerson Controller
+  fileName: Advanced First Person Controller

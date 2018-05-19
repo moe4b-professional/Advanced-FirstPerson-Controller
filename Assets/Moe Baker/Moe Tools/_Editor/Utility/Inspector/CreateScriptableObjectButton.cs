@@ -20,33 +20,55 @@ using Random = UnityEngine.Random;
 
 namespace Moe.Tools
 {
-    public class CreateScriptableObjectButton<TScriptableObject> where TScriptableObject : ScriptableObject
+    public class CreateScriptableObjectButton<TScriptableObject>
+        where TScriptableObject : ScriptableObject
     {
-        public string buttonName;
+        public string Label { get; set; }
 
-        public string fileName;
-        public virtual string FullFileName { get { return fileName + ".asset"; } }
-
-        public string folderPath;
-        public virtual string FullFolderPath { get { return "Assets/" + folderPath; } }
-
-        public CreateScriptableObjectButton(string fileName, string folderPath)
+        public string FileName { get; set; }
+        public virtual string GetFullFileName()
         {
-            buttonName = "Create " + fileName;
+            return FileName + ".asset";
+        }
 
-            this.fileName = fileName;
-            this.folderPath = folderPath;
+        public string FolderPath { get; set; }
+        public virtual string GetFullFolderPath()
+        {
+            return FolderPath + ".asset";
+        }
+
+        public virtual string GetPath()
+        {
+            return Path.Combine(GetFullFolderPath(), GetFullFileName());
         }
 
         public virtual void Draw()
         {
-            if (GUILayout.Button(buttonName))
-            {
-                if (!AssetDatabase.IsValidFolder(FullFolderPath))
-                    AssetDatabase.CreateFolder("Assets/", folderPath);
+            if (GUILayout.Button(Label))
+                Create();
+        }
+        protected virtual void Create()
+        {
+            if (!AssetDatabase.IsValidFolder(GetFullFolderPath()))
+                AssetDatabase.CreateFolder("Assets/", FolderPath);
 
-                MoeTools.Editor.CreateAsset(typeof(TScriptableObject), FullFolderPath + '/' + FullFileName);
-            }
+            MoeTools.Editor.CreateAsset(typeof(TScriptableObject), GetPath());
+        }
+
+        public CreateScriptableObjectButton(string fileName, string folderPath) : this(GetLabel(fileName), fileName, folderPath)
+        {
+            
+        }
+        public CreateScriptableObjectButton(string label, string fileName, string folderPath)
+        {
+            this.Label = label;
+            this.FileName = fileName;
+            this.FolderPath = folderPath;
+        }
+
+        public static string GetLabel(string fileName)
+        {
+            return "Create " + fileName;
         }
     }
 }

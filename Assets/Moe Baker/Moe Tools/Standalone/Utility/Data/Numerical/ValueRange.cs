@@ -19,7 +19,7 @@ using Random = UnityEngine.Random;
 namespace Moe.Tools
 {
     [Serializable]
-    public abstract class ValueRange<T> : IRange<T>
+    public abstract class ValueRange<T> : IValueRange<T>
     {
         [SerializeField]
         T min;

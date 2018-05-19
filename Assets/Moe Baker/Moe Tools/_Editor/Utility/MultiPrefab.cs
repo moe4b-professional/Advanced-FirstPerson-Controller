@@ -100,7 +100,7 @@ namespace Moe.Tools
 #if UNITY_EDITOR
         [CanEditMultipleObjects]
         [CustomEditor(typeof(MultiPrefab))]
-        public class Inspector : InspectorBase<MultiPrefab>
+        public class Inspector : MoeInspector<MultiPrefab>
         {
             InspectorList objects;
 
@@ -125,6 +125,8 @@ namespace Moe.Tools
                         scale.FindPropertyRelative("z").floatValue = 1f;
                     }
                 };
+
+                CustomGUI.Overrides.Add(objects.serializedProperty, DrawObjects);
             }
 
             protected virtual void DrawObjectsElement(Rect rect, int index, bool isActive, bool isFocused)
@@ -159,13 +161,7 @@ namespace Moe.Tools
 
             public override void OnInspectorGUI()
             {
-                if (targets.Length == 1)
-                {
-                    EditorGUILayout.Space();
-                    objects.Draw();
-                }
-
-                serializedObject.ApplyModifiedProperties();
+                base.OnInspectorGUI();
 
                 if (GUILayout.Button("Instantiate"))
                 {
@@ -174,6 +170,15 @@ namespace Moe.Tools
                 if (GUILayout.Button("Clear"))
                 {
                     ForAllTargets((MultiPrefab target) => target.Clear());
+                }
+            }
+
+            protected virtual void DrawObjects()
+            {
+                if (targets.Length == 1)
+                {
+                    EditorGUILayout.Space();
+                    objects.Draw();
                 }
             }
         }

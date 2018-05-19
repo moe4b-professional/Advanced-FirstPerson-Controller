@@ -10,10 +10,10 @@ namespace Moe.Tools
     {
         public virtual void Init()
         {
-
+            Clear();
         }
 
-        public virtual void UpdateInput()
+        public virtual void Process()
         {
 
         }

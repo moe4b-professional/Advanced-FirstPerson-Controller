@@ -31,6 +31,24 @@ namespace Moe.Tools
 
                 return a;
             }
+
+            public static Vector3 MoveTowardsAngle(Vector3 current, Vector3 target, float speed)
+            {
+                return new Vector3()
+                {
+                    x = Mathf.MoveTowardsAngle(current.x, target.x, speed),
+                    y = Mathf.MoveTowardsAngle(current.y, target.y, speed),
+                    z = Mathf.MoveTowardsAngle(current.z, target.z, speed),
+                };
+            }
+        }
+    }
+
+    public static partial class MoeToolsExtensionMethods
+    {
+        public static Vector3 MoveTowardsAngle(this Vector3 current, Vector3 target, float speed)
+        {
+            return MoeTools.Vector.MoveTowardsAngle(current, target, speed);
         }
     }
 }

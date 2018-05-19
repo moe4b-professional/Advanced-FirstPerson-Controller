@@ -98,13 +98,13 @@ namespace Moe.Tools
         [SerializeField]
         ParticleSystem particle;
 
-        public void Init()
+        protected virtual void Start()
         {
-
+            Explode();
         }
 
-        public delegate void AddForceDelegate(Rigidbody rigidbody, float distance);
-        public event AddForceDelegate OnAddForce;
+        public delegate void ApplyDelegate(Rigidbody rigidbody, float distance);
+        public event ApplyDelegate OnApply;
         public virtual void Explode()
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position + WorldOffset, radius, mask, triggerInteraction);
@@ -112,14 +112,11 @@ namespace Moe.Tools
             Stack<Rigidbody> rigidbodies = ExtractHits(colliders);
 
             foreach (var rb in rigidbodies)
-            {
-                ProcessRigidbody(rb);
+                Apply(rb, Vector3.Distance(transform.position, rb.position));
 
-                if (OnAddForce != null)
-                    OnAddForce(rb, Vector3.Distance(transform.position, rb.position));
-            }
+            if(_SFX)
+                aud.PlayOneShot(_SFX.RandomClip);
 
-            aud.PlayOneShot(_SFX.RandomClip);
             particle.Play();
         }
 
@@ -141,9 +138,12 @@ namespace Moe.Tools
             return rigidbodies;
         }
 
-        protected virtual void ProcessRigidbody(Rigidbody rb)
+        protected virtual void Apply(Rigidbody rb, float distance)
         {
             rb.AddExplosionForce(force.Value, transform.position + WorldOffset, radius, force.UpwardsModifier, force.Mode);
+
+            if (OnApply != null)
+                OnApply(rb, distance);
         }
 
         void OnDrawGizmos()

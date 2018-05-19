@@ -98,13 +98,8 @@ namespace Moe.Tools
 
         [CanEditMultipleObjects]
         [CustomEditor(typeof(LightProbeRegion))]
-        public class Inspector : InspectorBase<LightProbeRegion>
+        public class Inspector : MoeInspector<LightProbeRegion>
         {
-            protected override void OnEnable()
-            {
-                base.OnEnable();
-            }
-
             public override void OnInspectorGUI()
             {
                 base.OnInspectorGUI();

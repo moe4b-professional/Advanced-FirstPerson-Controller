@@ -29,15 +29,11 @@ namespace Moe.Tools
             }
         }
 
-        void Update()
+        IEnumerator Start()
         {
-            time -= UnityEngine.Time.deltaTime;
+            yield return new WaitForSeconds(time);
 
-            if (time <= 0f)
-            {
-                Instantiate(GameObject.Find("Explosion"), transform.position, Quaternion.identity);
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
         }
     }
 }

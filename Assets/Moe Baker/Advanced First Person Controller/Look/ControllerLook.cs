@@ -128,8 +128,6 @@ namespace AFPC
             CharacterLook.Process();
 
             CameraRig.Process();
-
-            LookTarget.Process();
         }
     }
 

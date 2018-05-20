@@ -17,29 +17,72 @@ using UnityEditorInternal;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
+using Moe.Tools;
+
 namespace AFPC
 {
 	public abstract partial class ControllerCharacterLookBase : FPController.Module
 	{
         public ControllerLook Look { get { return Controller.Look; } }
 
-        public float Sensitivity { get { return Look.Sensitvity.Horizontal; } }
+        public ControllerLookTarget LookTarget { get { return Look.LookTarget; } }
+
+        float targetLookScale;
+        public virtual float Sensitivity
+        {
+            get
+            {
+                return Look.Sensitvity.Horizontal * targetLookScale;
+            }
+        }
+
 
         public virtual void Process()
         {
-            if(Look.Control)
+            ProcessLookTarget();
+
+            ProcessInput();
+        }
+
+        protected virtual void ProcessLookTarget()
+        {
+            if (LookTarget.Position.HasValue)
+            {
+                var target = GetRotationTo(LookTarget.Position.Value);
+
+                RotateTowards(target, LookTarget.Speed);
+
+                targetLookScale = GetSensitivtyScale(target, LookTarget.Range);
+            }
+            else
+                targetLookScale = 1f;
+        }
+
+        protected virtual void ProcessInput()
+        {
+            if (Look.Control)
             {
                 Controller.transform.localRotation *=
                     Quaternion.Euler(0f, InputModule.Look.x * Sensitivity, 0f);
             }
         }
 
-        public virtual void LookAt(Vector3 position, float speed)
+
+        public virtual float GetSensitivtyScale(Quaternion targetRotation, float range)
+        {
+            return MoeTools.Math.InvertScale(Quaternion.Angle(targetRotation, transform.rotation) / range);
+        }
+        public virtual Quaternion GetRotationTo(Vector3 position)
         {
             var direction = (position - Controller.transform.position).normalized;
             direction.y = 0f;
 
-            Controller.transform.rotation = Quaternion.RotateTowards(Controller.transform.rotation, Quaternion.LookRotation(direction), speed * Time.deltaTime);
+            return Quaternion.LookRotation(direction);
+        }
+        public virtual void RotateTowards(Quaternion target, float speed)
+        {
+            Controller.transform.rotation = 
+                Quaternion.RotateTowards(Controller.transform.rotation, target, speed * Time.deltaTime);
         }
 	}
 

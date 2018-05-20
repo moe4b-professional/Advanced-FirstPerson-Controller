@@ -27,7 +27,7 @@ namespace AFPC
         {
             get
             {
-                return Movement.Control && _control;
+                return Movement.Control && _control && cooldownCoroutine == null;
             }
             set
             {
@@ -97,6 +97,8 @@ namespace AFPC
 
             rigidbody.AddForce(Vector3.up * power, ForceMode.VelocityChange);
 
+            cooldownCoroutine = StartCoroutine(CooldownProcedure());
+
             if (OnDo != null)
                 OnDo();
         }
@@ -111,6 +113,14 @@ namespace AFPC
 
 
             rigidbody.velocity = velocity;
+        }
+
+        Coroutine cooldownCoroutine;
+        protected virtual IEnumerator CooldownProcedure()
+        {
+            yield return new WaitForSeconds(0.2f);
+
+            cooldownCoroutine = null;
         }
     }
 

@@ -65,7 +65,7 @@ namespace AFPC
             strafeAxis.Process();
             Move = new Vector2(strafeAxis.RawValue, walkAxis.RawValue);
 
-            Jump = Input.GetKeyDown(jumpKey);
+            Jump = Input.GetKey(jumpKey);
             Sprint = Input.GetKey(sprintKey);
 
             Crouch = Input.GetKeyDown(crouchKey);

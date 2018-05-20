@@ -41,14 +41,9 @@ namespace AFPC
         protected float speed = 360f;
         public float Speed { get { return speed; } }
 
-        public virtual void Process()
-        {
-            if(Position.HasValue)
-            {
-                CharacterLook.LookAt(Position.Value, speed);
-                camera.LookAt(Position.Value, speed);
-            }
-        }
+        [SerializeField]
+        protected float range = 40f;
+        public float Range { get { return range; } }
     }
 
     public partial class ControllerLookTarget : ControllerLookTargetBase

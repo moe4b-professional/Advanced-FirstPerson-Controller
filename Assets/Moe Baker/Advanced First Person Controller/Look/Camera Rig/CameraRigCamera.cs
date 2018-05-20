@@ -24,7 +24,9 @@ namespace AFPC
     [RequireComponent(typeof(Camera))]
 	public abstract partial class CameraRigCameraBase : CameraRig.Part
 	{
-		[SerializeField]
+        public ControllerLookTarget LookTarget { get { return Look.LookTarget; } }
+
+        [SerializeField]
         protected Camera component;
         public Camera Component { get { return component; } }
 
@@ -94,7 +96,14 @@ namespace AFPC
         }
 
 
-        public float Sensitivity { get { return Look.Sensitvity.Vertical; } }
+        float targetLookScale;
+        public float Sensitivity
+        {
+            get
+            {
+                return Look.Sensitvity.Vertical * targetLookScale;
+            }
+        }
 
         public virtual float Input { get { return -InputModule.Look.y; } }
 
@@ -124,6 +133,8 @@ namespace AFPC
         {
             base.Process();
 
+            ProcessLookTarget();
+
             ProcessInput();
 
             Headbob.Process();
@@ -134,6 +145,20 @@ namespace AFPC
             base.ApplyState();
 
             transform.localPosition = Vector3.up * (TransitionState.Height * MoeTools.Math.InvertScale(CameraRig.HeightScale) - offset);
+        }
+
+        protected virtual void ProcessLookTarget()
+        {
+            if (LookTarget.Position.HasValue)
+            {
+                var target = GetRotationTo(LookTarget.Position.Value);
+
+                RotateTowards(target, LookTarget.Speed);
+
+                targetLookScale = MoeTools.Math.InvertScale(Quaternion.Angle(target, transform.localRotation) / LookTarget.Range);
+            }
+            else
+                targetLookScale = 1f;
         }
 
         protected virtual void ProcessInput()
@@ -163,13 +188,24 @@ namespace AFPC
         }
 
 
-        public virtual void LookAt(Vector3 position, float speed)
+        public virtual Quaternion GetRotationTo(Vector3 position)
         {
             var direction = (position - transform.position);
 
-            var xAngles = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), speed * Time.deltaTime).eulerAngles.x;
+            var angles = Quaternion.LookRotation(direction).eulerAngles;
 
-            transform.localEulerAngles = new Vector3(xAngles, transform.localEulerAngles.y, transform.localEulerAngles.z);
+            angles.x = angles.y = 0f;
+
+            return Quaternion.Euler(angles);
+        }
+        public virtual void LookAt(Vector3 position, float speed)
+        {
+            RotateTowards(GetRotationTo(position), speed);
+        }
+        public virtual void RotateTowards(Quaternion target, float speed)
+        {
+            transform.localRotation =
+                Quaternion.RotateTowards(transform.localRotation, target, speed * Time.deltaTime);
         }
     }
 

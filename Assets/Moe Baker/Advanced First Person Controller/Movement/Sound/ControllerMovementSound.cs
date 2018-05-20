@@ -17,28 +17,23 @@ using UnityEditorInternal;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
+using Moe.Tools;
+
 namespace AFPC
 {
-	public class ControllerStepSoundBase : FPController.Module
-	{
-        [SerializeField]
-        protected bool apply = true;
-        public bool Apply { get { return apply; } }
-
+    [RequireComponent(typeof(AudioSource))]
+    public abstract partial class ControllerMovementSoundBase : FPController.Module
+    {
         public ControllerGroundCheck GroundCheck { get { return Controller.Movement.GroundCheck; } }
 
-        public ControllerStep Step { get { return Controller.Movement.Step; } }
-
-        public ControllerMovementSound MovementSound { get { return Controller.Movement.Sound; } }
-        public AudioSource AudioSource { get { return MovementSound.audio; } }
 
         [SerializeField]
-        protected StepSoundSet defaultSet;
-        public StepSoundSet DefaultSet { get { return defaultSet; } }
+        protected MovementSoundSet defaultSet;
+        public MovementSoundSet DefaultSet { get { return defaultSet; } }
 
-        public StepSoundSet OverrideSet { get; protected set; }
+        public MovementSoundSet OverrideSet { get; protected set; }
 
-        public StepSoundSet CurrentSet
+        public MovementSoundSet CurrentSet
         {
             get
             {
@@ -50,24 +45,41 @@ namespace AFPC
         }
 
 
+        new public AudioSource audio { get; protected set; }
+        protected virtual void InitAudio()
+        {
+            audio = GetComponent<AudioSource>();
+        }
+
+        public ControllerStepSound Step { get; protected set; }
+        protected virtual void InitStep()
+        {
+            Step = Controller.Modules.Find<ControllerStepSound>();
+        }
+
+
         public override void Init(FPController link)
         {
             base.Init(link);
 
-            Step.OnComplete += Play;
+            InitAudio();
+
+            InitStep();
         }
+
 
         public virtual void Process()
         {
-            UpdateOverrideSet();
+            CheckGround();
         }
-        public virtual void UpdateOverrideSet()
+
+        public virtual void CheckGround()
         {
             if (GroundCheck.HasResault)
             {
                 var soundSurface = GroundCheck.Resault.hit.collider.GetComponent<SoundSurface>();
 
-                if(soundSurface != null)
+                if (soundSurface != null)
                 {
                     OverrideSet = soundSurface.Set;
                 }
@@ -82,16 +94,10 @@ namespace AFPC
             else
                 OverrideSet = null;
         }
-
-        protected virtual void Play()
-        {
-            if(apply && CurrentSet != null)
-                AudioSource.PlayOneShot(CurrentSet.Get(Controller).RandomClip);
-        }
     }
 
-    public partial class ControllerStepSound : ControllerStepSoundBase
+    public partial class ControllerMovementSound : ControllerMovementSoundBase
     {
-
+        
     }
 }

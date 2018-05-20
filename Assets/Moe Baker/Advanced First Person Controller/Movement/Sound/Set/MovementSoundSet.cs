@@ -22,8 +22,10 @@ using Moe.Tools;
 namespace AFPC
 {
     [CreateAssetMenu(menuName = FPController.MenuPath + "Step Sounds Set")]
-    public class StepSoundSet : ControllerState.DataSet<SoundSet>
+    public class MovementSoundSet : ControllerState.DataSet<SoundSet>
     {
-        
+        [SerializeField]
+        protected AudioClip slide;
+        public AudioClip Slide { get { return slide; } }
     }
 }

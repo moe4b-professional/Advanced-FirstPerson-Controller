@@ -28,7 +28,10 @@ namespace AFPC
         public virtual void Process()
         {
             if(Look.Control)
-                Controller.transform.localRotation *= Quaternion.Euler(0f, InputModule.Look.x * Sensitivity, 0f);
+            {
+                Controller.transform.localRotation *=
+                    Quaternion.Euler(0f, InputModule.Look.x * Sensitivity, 0f);
+            }
         }
 
         public virtual void LookAt(Vector3 position, float speed)

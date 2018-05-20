@@ -15,3 +15,4 @@ MonoBehaviour:
   crouch: {fileID: 11400000, guid: 1ceb1b302eb65c0479e0b60e3e10f0f6, type: 2}
   prone: {fileID: 11400000, guid: 1ceb1b302eb65c0479e0b60e3e10f0f6, type: 2}
   sprint: {fileID: 11400000, guid: 1ceb1b302eb65c0479e0b60e3e10f0f6, type: 2}
+  slide: {fileID: 8300000, guid: 49e8130a26b17ed43a4e6911a20207a9, type: 3}

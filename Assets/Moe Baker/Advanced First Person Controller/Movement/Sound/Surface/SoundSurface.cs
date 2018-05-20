@@ -23,7 +23,7 @@ namespace AFPC
     public class SoundSurface : MonoBehaviour
     {
         [SerializeField]
-        StepSoundSet set;
-        public StepSoundSet Set { get { return set; } }
+        MovementSoundSet set;
+        public MovementSoundSet Set { get { return set; } }
     }
 }

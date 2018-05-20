@@ -105,15 +105,24 @@ namespace AFPC
             }
         }
 
+        public ControllerSlideSound Sound { get; protected set; }
+        protected virtual void InitSound()
+        {
+            Sound = Controller.Modules.Find<ControllerSlideSound>();
+        }
+
 
         public override void Init(FPController link)
         {
             base.Init(link);
 
             data.SetCrouchData(State.Crouch);
+
+            InitSound();
         }
 
 
+        public event Action OnBeggining;
         public virtual void Begin()
         {
             if(!GroundCheck.Grounded)
@@ -129,7 +138,11 @@ namespace AFPC
             }
 
             State.Traverser.GoTo(data);
+
+            if (OnBeggining != null)
+                OnBeggining();
         }
+
 
         public virtual void Process()
         {
@@ -139,18 +152,25 @@ namespace AFPC
 
             if (Speed.Magnitude <= stoppingSpeed)
                 End();
+
+            Sound.Process();
         }
         protected virtual void CalculateSpeed()
         {
             Speed.CalculateDeAcceleration(deAcceleration);
         }
 
+
+        public event Action OnEnd;
         public virtual void End()
         {
             if (endState == ControllerState.Type.Sprint && !State.Transition.Sprint.Control)
                 State.Traverser.GoTo(ControllerState.Type.Crouch);
             else
                 State.Traverser.GoTo(endState);
+
+            if (OnEnd != null)
+                OnEnd();
         }
     }
 }

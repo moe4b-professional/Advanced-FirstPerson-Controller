@@ -77,7 +77,7 @@ namespace AFPC
             return terrain.terrainData.splatPrototypes[index].texture.name;
         }
 
-        public StepSoundSet GetSet(Vector3 position)
+        public MovementSoundSet GetSet(Vector3 position)
         {
             position.y = 0f;
 
@@ -136,8 +136,8 @@ namespace AFPC
             public string TextureName;
 
             [SerializeField]
-            StepSoundSet set;
-            public StepSoundSet Set { get { return set; } set { set = value; } }
+            MovementSoundSet set;
+            public MovementSoundSet Set { get { return set; } set { set = value; } }
 
             public SetData(string texureName)
             {
@@ -175,7 +175,7 @@ namespace AFPC
                 Object soundsSet = sets.GetPropertyOfIndex(index, "set").objectReferenceValue;
 
                 sets.GetPropertyOfIndex(index, "set").objectReferenceValue =
-                    EditorGUI.ObjectField(GUIArea.ProgressLine(ref rect), textureName, soundsSet, typeof(StepSoundSet), false);
+                    EditorGUI.ObjectField(GUIArea.ProgressLine(ref rect), textureName, soundsSet, typeof(MovementSoundSet), false);
             }
 
             public override void OnInspectorGUI()

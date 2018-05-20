@@ -84,6 +84,15 @@ namespace AFPC
             }
         }
 
+        [SerializeField]
+        protected AccelerationData acceleration;
+        public AccelerationData Acceleration { get { return acceleration; } }
+        [Serializable]
+        public class AccelerationData
+        {
+
+        }
+
         public CameraRig CameraRig { get; protected set; }
         protected virtual void InitCameraRig()
         {

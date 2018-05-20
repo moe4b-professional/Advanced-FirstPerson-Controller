@@ -11,19 +11,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ab0fbcf2cbb854f9242c8f8ab1b448, type: 3}
   m_Name: Default Unity Input
   m_EditorClassIdentifier: 
-  moveAxis:
-    x:
-      name: Horizontal
-    y:
-      name: Vertical
-  jumpButton: Jump
-  sprintButton: Sprint
-  crouchButton: Crouch
-  proneButton: Prone
   lookAxis:
-    x:
-      name: Look X
-    y:
-      name: Look Y
-  leanAxis:
-    name: Lean
+    x: Mouse X
+    y: Mouse Y

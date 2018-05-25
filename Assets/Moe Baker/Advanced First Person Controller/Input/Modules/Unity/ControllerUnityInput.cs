@@ -46,8 +46,12 @@ namespace AFPC
 
 
         [SerializeField]
-        protected CombinedAxisData lookAxis = new CombinedAxisData("Mouse");
-        public CombinedAxisData LookAxis { get { return lookAxis; } }
+        protected CombinedAxisData mouseLookAxis = new CombinedAxisData("Mouse");
+        public CombinedAxisData MouseLookAxis { get { return mouseLookAxis; } }
+
+        [SerializeField]
+        protected AcceleratedCombinedAxis controllerLookAxis = new AcceleratedCombinedAxis("Controller Look", 2f);
+        public AcceleratedCombinedAxis ControllerLookAxis { get { return controllerLookAxis; } }
 
         [SerializeField]
         protected AxisData leanAxis = new AxisData("Lean");
@@ -65,10 +69,16 @@ namespace AFPC
             Crouch = Input.GetButtonDown(crouchButton);
             Prone = Input.GetButtonDown(proneButton);
 
-
-            Look = lookAxis.Value;
+            ProcessLook();
 
             Lean = (int)leanAxis.RawValue;
+        }
+
+        protected virtual void ProcessLook()
+        {
+            controllerLookAxis.Process();
+
+            Look = mouseLookAxis.Value + controllerLookAxis.Value;
         }
     }
 }

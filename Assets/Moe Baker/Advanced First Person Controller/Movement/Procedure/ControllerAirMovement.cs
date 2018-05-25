@@ -28,12 +28,22 @@ namespace AFPC
         public override bool UpdateDirection { get { return updateDirection; } }
 
         [SerializeField]
-        protected float acceleration = 5f;
+        protected bool processStateTransitions = true;
+        public override bool ProcessStateTransitions { get { return processStateTransitions; } }
+
+        [SerializeField]
+        protected float acceleration = 15f;
         public float Acceleration { get { return acceleration; } }
 
         [SerializeField]
-        protected float deAcceleration = 2f;
+        protected float deAcceleration = 15f;
         public float DeAcceleration { get { return deAcceleration; } }
+
+        [SerializeField]
+        protected float speedScale = 0.025f;
+        public float SpeedScale { get { return speedScale; } }
+
+        public override float Friction { get { return 0f; } }
 
 
         public override void Process()
@@ -45,18 +55,21 @@ namespace AFPC
 
         protected virtual void CalculateSpeed()
         {
-            Speed.CalculateAcceleration(ControlScale, acceleration, false);
-            Speed.CalculateDeAcceleration(deAcceleration);
+            Speed.Calculate(Control.AbsoluteScale, acceleration, deAcceleration, true);
         }
-
 
         public override void FixedProcess()
         {
             base.FixedProcess();
 
-            var velocity = Direction.Forward * Speed.Value.y + 
-                Direction.Right * Speed.Value.x + 
-                Vector3.up * rigidbody.velocity.y;
+            var velocity = Direction.Forward * Speed.Value.y * speedScale +
+                Direction.Right * Speed.Value.x * speedScale;
+
+            velocity += Vector3.Scale(rigidbody.velocity, Vector3.right + Vector3.forward);
+
+            velocity = Vector3.ClampMagnitude(velocity, Speed.MaxValue);
+
+            velocity.y = rigidbody.velocity.y;
 
             SetVelocity(velocity);
 

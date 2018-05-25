@@ -29,7 +29,9 @@ namespace AFPC
         {
             get
             {
-                return base.Control && Speed.Value.y >= 0f && InputModule.Move.magnitude >= minInput;
+                return base.Control 
+                    && Speed.Value.y >= 0f && 
+                    InputModule.Move.magnitude * Movement.Control.AbsoluteScale >= minimumInput;
             }
             set
             {
@@ -41,16 +43,16 @@ namespace AFPC
 
         [SerializeField]
         [Range(0f, 1f)]
-        protected float minInput = 0.75f;
-        public float MinInput
+        protected float minimumInput = 0.75f;
+        public float MinimumInput
         {
             get
             {
-                return minInput;
+                return minimumInput;
             }
             set
             {
-                minInput = Mathf.Clamp01(value);
+                minimumInput = Mathf.Clamp01(value);
             }
         }
 

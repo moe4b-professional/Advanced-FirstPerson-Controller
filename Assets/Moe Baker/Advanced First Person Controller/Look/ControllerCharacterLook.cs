@@ -60,11 +60,8 @@ namespace AFPC
 
         protected virtual void ProcessInput()
         {
-            if (Look.Control)
-            {
-                Controller.transform.localRotation *=
-                    Quaternion.Euler(0f, InputModule.Look.x * Sensitivity, 0f);
-            }
+            Controller.transform.localRotation *=
+                Quaternion.Euler(0f, InputModule.Look.x * Look.Control.AbsoluteScale * Sensitivity, 0f);
         }
 
 

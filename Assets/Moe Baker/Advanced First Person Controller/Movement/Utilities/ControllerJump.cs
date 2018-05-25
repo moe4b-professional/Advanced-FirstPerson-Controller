@@ -27,7 +27,7 @@ namespace AFPC
         {
             get
             {
-                return Movement.Control && _control && cooldownCoroutine == null;
+                return _control && Movement.Control.AbsoluteToggle && cooldownCoroutine == null;
             }
             set
             {
@@ -72,21 +72,23 @@ namespace AFPC
 
         public virtual void Process()
         {
-            if (InputModule.Jump && Control)
+            if (InputModule.Jump && Control && cooldownCoroutine == null)
             {
-                if (CanDo)
-                    Do();
-                else if (TargetState == State.Crouch || TargetState == State.Prone)
+                if (TargetState == State.Crouch || TargetState == State.Prone)
                 {
                     State.Traverser.GoTo(State.Walk);
                 }
-                else if(TargetState == Movement.Procedure.Ground.Slide.Data)
+                else if (TargetState == Movement.Procedure.Ground.Slide.Data)
                 {
                     if (State.Transition.Sprint.Control)
                         State.Traverser.GoTo(State.Sprint);
                     else
                         State.Traverser.GoTo(State.Walk);
                 }
+                else if (CanDo)
+                    Do();
+
+                cooldownCoroutine = StartCoroutine(CooldownProcedure());
             }
         }
 
@@ -96,8 +98,6 @@ namespace AFPC
             ProcessVelocity();
 
             rigidbody.AddForce(Vector3.up * power, ForceMode.VelocityChange);
-
-            cooldownCoroutine = StartCoroutine(CooldownProcedure());
 
             if (OnDo != null)
                 OnDo();

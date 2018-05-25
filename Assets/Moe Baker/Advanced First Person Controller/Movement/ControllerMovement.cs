@@ -24,19 +24,8 @@ namespace AFPC
 	public abstract partial class ControllerMovementBase : FPController.Module
 	{
         [SerializeField]
-        private bool _control = true;
-        public virtual bool Control
-        {
-            get
-            {
-                return _control && Controller.Control;
-            }
-            set
-            {
-                _control = value;
-            }
-        }
-        public virtual float ControlScale { get { return Control ? 1f : 0f; } }
+        protected ControlConstraint control;
+        public ControlConstraint Control { get { return control; } }
 
 
         public ControllerDirection Direction { get; protected set; }
@@ -110,6 +99,8 @@ namespace AFPC
         public override void Init(FPController link)
         {
             base.Init(link);
+
+            control.SetContext(Controller.Control);
 
             InitModules();
         }

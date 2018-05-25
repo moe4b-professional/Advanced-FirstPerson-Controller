@@ -70,13 +70,11 @@ namespace AFPC
         {
             base.Process();
 
-            State.Transition.Process();
-
             if (Slide.Active)
                 Slide.Process();
             else
             {
-                Speed.Calculate(ControlScale, speedModifiers);
+                Speed.Calculate(Control.AbsoluteScale, speedModifiers);
                 Direction.Calculate();
             }
 

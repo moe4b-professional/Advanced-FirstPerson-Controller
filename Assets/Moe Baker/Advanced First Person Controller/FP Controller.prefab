@@ -282,7 +282,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1373468343257610}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -603,7 +603,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e5bbe65c1c4f1245b214c9e85133f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _control: 1
+  control:
+    toggle: 1
+    scale: 1
   range: 40
   speed: 200
   cameraAlignment: 0.8
@@ -704,7 +706,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef45407765e860a469677e502677bf0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _control: 1
+  control:
+    toggle: 1
+    scale: 1
   initMode: 2
   inputModulator: {fileID: 11400000, guid: ab48c1fb00d62a2449ad987628bb2f8d, type: 2}
 --- !u!114 &114273415733837618
@@ -795,7 +799,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aee8c41a53965514fb38bc770289af44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultSet: {fileID: 11400000, guid: bf10040ba1024d947b3ce4ea62f6ea28, type: 2}
+  defaultSet: {fileID: 11400000, guid: aa1e280b129ddad4fbea0658f2faca70, type: 2}
 --- !u!114 &114448856149604938
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -808,8 +812,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updateDirection: 1
-  acceleration: 5
-  deAcceleration: 2
+  processStateTransitions: 1
+  acceleration: 15
+  deAcceleration: 15
+  speedScale: 0.025
 --- !u!114 &114465494978858076
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -841,6 +847,8 @@ MonoBehaviour:
   radiusScale: 0.5
   range: 0.1
   offset: 0.1
+  maxSlope: 45
+  slope: 0
 --- !u!114 &114492301586249222
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -853,7 +861,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _control: 1
-  minInput: 0.75
+  minimumInput: 0.75
   input: 1
 --- !u!114 &114519772722735782
 MonoBehaviour:
@@ -990,7 +998,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c45f517be2dda2e4f9a26c783e2e78c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 360
+  speed: 160
+  range: 40
 --- !u!114 &114746096415833728
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1002,7 +1011,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1544560d62695fa45867ea00723d061d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _control: 1
+  control:
+    toggle: 1
+    scale: 1
   sensitivity:
     vertical: 4
     horizontal: 4
@@ -1028,7 +1039,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82f57974fdf97b4499b3f3de6d637966, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _control: 1
+  control:
+    toggle: 1
+    scale: 1
 --- !u!114 &114851912328710026
 MonoBehaviour:
   m_ObjectHideFlags: 1

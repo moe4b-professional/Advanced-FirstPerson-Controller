@@ -97,11 +97,11 @@ namespace AFPC
             public ControllerGravity Gravity { get { return Movement.Gravity; } }
 
 
-            public virtual bool Control { get { return Movement.Control; } }
-            public virtual float ControlScale { get { return Movement.ControlScale; } }
+            public virtual ControlConstraint Control { get { return Movement.Control; } }
 
 
             public virtual float Friction { get { return 0f; } }
+            public virtual bool ProcessStateTransitions { get { return true; } }
             public virtual float StateTransitionSpeed { get { return State.Traverser.Speed; } }
             public virtual bool UpdateMaxSpeed { get { return true; } }
             public virtual bool UpdateDirection { get { return true; } }
@@ -143,18 +143,18 @@ namespace AFPC
         {
             GroundCheck.Do();
 
-            if (Current.UpdateDirection)
-                Direction.Calculate();
+            if (Current.UpdateDirection) Direction.Calculate();
+
+            if (Current.ProcessStateTransitions) State.Transition.Process();
+
+            if (Current.UpdateMaxSpeed) Speed.UpdateMaxValue();
 
             State.Traverser.Process(Current.StateTransitionSpeed);
 
-            if (Current.UpdateMaxSpeed)
-                Speed.UpdateMaxValue();
+            Current.Process();
 
             SetFriction(Current.Friction);
 
-            Current.Process();
-            
             Step.Process(Current.Step);
         }
 

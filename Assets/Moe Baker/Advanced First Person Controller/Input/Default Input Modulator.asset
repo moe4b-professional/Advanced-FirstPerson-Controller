@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   platforms:
   - name: PC
-    module: {fileID: 11400000, guid: 5f07633801d579a49ad540e9411701be, type: 2}
+    module: {fileID: 11400000, guid: f0215d58daeb6c245978ef9765070d84, type: 2}
     supportedPlatforms: 07000000020000000000000001000000100000000d000000
   - name: Mobile
     module: {fileID: 0}

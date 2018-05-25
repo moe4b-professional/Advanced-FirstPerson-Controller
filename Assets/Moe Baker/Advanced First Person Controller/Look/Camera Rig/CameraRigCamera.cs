@@ -101,7 +101,7 @@ namespace AFPC
         {
             get
             {
-                return Look.Sensitvity.Vertical * targetLookScale;
+                return Look.Sensitvity.Vertical * targetLookScale * Look.Control.AbsoluteScale;
             }
         }
 
@@ -165,7 +165,7 @@ namespace AFPC
         {
             var angles = transform.localEulerAngles;
 
-            if(CameraRig.Look.Control)
+            if (CameraRig.Look.Control.AbsoluteToggle)
             {
                 if (Input > 0f)
                     angles.x = Mathf.MoveTowardsAngle(angles.x, range.Down, Mathf.Abs(Input) * Sensitivity);

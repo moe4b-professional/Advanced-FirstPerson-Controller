@@ -24,18 +24,8 @@ namespace AFPC
 	public abstract partial class ControllerLeanBase : FPController.Module
 	{
         [SerializeField]
-        protected bool _control = true;
-        public bool Control
-        {
-            get
-            {
-                return _control && Controller.Look.Control;
-            }
-            set
-            {
-                _control = value;
-            }
-        }
+        protected ControlConstraint control;
+        public ControlConstraint Control { get { return control; } }
 
         public const float MaxRange = 80f;
         [SerializeField]
@@ -107,14 +97,21 @@ namespace AFPC
         public CameraRigPivot CameraRigPivot { get { return CameraRig.Pivot; } }
         public CameraRigCamera CameraRigCamera { get { return CameraRig.camera; } }
 
+        public override void Init(FPController link)
+        {
+            base.Init(link);
+
+            control.SetContext(Controller.Look.Control);
+        }
+
         public virtual void Process()
         {
-            if (InputModule.Lean != 0f && Control)
+            if (InputModule.Lean != 0f)
             {
                 if (LeanCheck(offset))
                     UpdateValue(0f);
                 else if (!LeanCheck(offset + 0.1f))
-                    UpdateValue(InputModule.Lean);
+                    UpdateValue(InputModule.Lean * control.AbsoluteScale);
             }
             else
                 UpdateValue(0f);

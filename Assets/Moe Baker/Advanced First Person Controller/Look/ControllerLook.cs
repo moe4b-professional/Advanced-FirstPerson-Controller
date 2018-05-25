@@ -26,19 +26,9 @@ namespace AFPC
         ControllerLook This { get { return this as ControllerLook; } }
 
         [SerializeField]
-        protected bool _control = true;
-        public virtual bool Control
-        {
-            get
-            {
-                return _control && Controller.Control;
-            }
-            set
-            {
-                _control = value;
-            }
-        }
-        
+        protected ControlConstraint control;
+        public ControlConstraint Control { get { return control; } }
+
         [SerializeField]
         protected SensitvityData sensitivity = new SensitvityData(4f);
         public SensitvityData Sensitvity { get { return sensitivity; } }
@@ -114,6 +104,8 @@ namespace AFPC
         public override void Init(FPController link)
         {
             base.Init(link);
+
+            control.SetContext(Controller.Control);
 
             InitCameraRig();
 

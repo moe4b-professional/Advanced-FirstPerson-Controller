@@ -31,7 +31,7 @@ namespace AFPC
         {
             get
             {
-                return _control && Movement.Control;
+                return _control && Movement.Control.AbsoluteToggle;
             }
             set
             {

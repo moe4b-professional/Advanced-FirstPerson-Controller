@@ -30,18 +30,8 @@ namespace AFPC
 
 
         [SerializeField]
-        protected bool _control = true;
-        public virtual bool Control
-        {
-            get
-            {
-                return _control;
-            }
-            set
-            {
-                _control = value;
-            }
-        }
+        protected ControlConstraint control;
+        public ControlConstraint Control { get { return control; } }
 
 
         [SerializeField]
@@ -222,6 +212,65 @@ namespace AFPC
 
         }
 	}
+
+    [Serializable]
+    public class ControlConstraint
+    {
+        [SerializeField]
+        protected bool toggle = true;
+        public bool _Toggle
+        {
+            get
+            {
+                return toggle && (HasContext ? Context.toggle : true);
+            }
+            set
+            {
+                toggle = value;
+            }
+        }
+        public virtual bool AbsoluteToggle
+        {
+            get
+            {
+                if (_Scale == 0f) return false;
+
+                return _Toggle;
+            }
+        }
+
+        [SerializeField]
+        [Range(0f, 1f)]
+        protected float scale = 1f;
+        public float _Scale
+        {
+            get
+            {
+                return scale * (HasContext ? Context.scale : 1f);
+            }
+            set
+            {
+                scale = Mathf.Clamp01(value);
+            }
+        }
+        public virtual float AbsoluteScale
+        {
+            get
+            {
+                if (_Toggle == false) return 0f;
+
+                return _Scale;
+            }
+        }
+
+        public ControlConstraint Context { get; protected set; }
+        public virtual bool HasContext { get { return Context != null; } }
+
+        public virtual void SetContext(ControlConstraint context)
+        {
+            this.Context = context;
+        }
+    }
 
     public enum InitMode
     {

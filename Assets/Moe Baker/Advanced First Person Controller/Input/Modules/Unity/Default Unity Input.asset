@@ -11,6 +11,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ab0fbcf2cbb854f9242c8f8ab1b448, type: 3}
   m_Name: Default Unity Input
   m_EditorClassIdentifier: 
-  lookAxis:
-    x: Mouse X
-    y: Mouse Y
+  moveAxis:
+    x:
+      name: Horizontal
+    y:
+      name: Vertical
+  jumpButton: Jump
+  sprintButton: Sprint
+  crouchButton: Crouch
+  proneButton: Prone
+  mouseLookAxis:
+    x:
+      name: Mouse X
+    y:
+      name: Mouse Y
+  controllerLookAxis:
+    axis:
+      x:
+        name: Controller Look X
+      y:
+        name: Controller Look Y
+    acceleration:
+      max: 1
+      speed:
+        value: 3
+        curve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 2
+            time: 0
+            value: 0
+            inSlope: 0.42288694
+            outSlope: 0.42288694
+            tangentMode: 0
+          - serializedVersion: 2
+            time: 0.7149349
+            value: 0.11154109
+            inSlope: 0.36840346
+            outSlope: 0.36840346
+            tangentMode: 0
+          - serializedVersion: 2
+            time: 1
+            value: 0.293602
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 0
+      value: {x: 0, y: 0}
+  leanAxis:
+    name: Lean

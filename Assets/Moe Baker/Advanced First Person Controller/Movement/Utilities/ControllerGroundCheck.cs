@@ -26,6 +26,22 @@ namespace AFPC
         public override Vector3 Start { get { return transform.position; } }
         public override Vector3 Direction { get { return Vector3.down; } }
 
+        [SerializeField]
+        protected float maxSlope = 45f;
+        public float MaxSlope
+        {
+            get
+            {
+                return maxSlope;
+            }
+            set
+            {
+                maxSlope = Mathf.Clamp(value, 0f, 90f);
+            }
+        }
+
+        public float slope = 0f;
+
         public override void Init(FPController link)
         {
             base.Init(link);
@@ -40,10 +56,25 @@ namespace AFPC
 
             base.Do();
 
+            CalculateSlope();
+
             if (firstDoFlag)
                 ProcessChange(prevGrounded);
             else
                 firstDoFlag = true;
+
+
+        }
+
+        protected virtual void CalculateSlope()
+        {
+            if(HasResault)
+            {
+                slope = Vector3.Angle(Resault.hit.normal, Vector3.up);
+
+                if (slope > maxSlope)
+                    Resault = null;
+            }
         }
 
         protected virtual void ProcessChange(bool prevGrounded)

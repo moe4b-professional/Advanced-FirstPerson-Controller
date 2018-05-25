@@ -44,6 +44,10 @@ namespace AFPC
 
         public virtual void Apply()
         {
+            Apply(multiplier);
+        }
+        public virtual void Apply(float multiplier)
+        {
             rigidbody.AddForce(Physics.gravity * multiplier, ForceMode.Acceleration);
         }
 	}

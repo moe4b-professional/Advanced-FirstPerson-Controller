@@ -63,10 +63,6 @@ namespace AFPC
         }
 
 
-        public virtual void Calculate(ControllerSpeed.IModifiers modifiers)
-        {
-            Calculate(1f, modifiers);
-        }
         public virtual void Calculate(float scale, ControllerSpeed.IModifiers modifiers)
         {
             Calculate(scale, modifiers.Acceleration, modifiers.DeAcceleration, modifiers.Snap);

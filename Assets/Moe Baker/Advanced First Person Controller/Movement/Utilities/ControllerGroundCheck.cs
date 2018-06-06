@@ -21,7 +21,7 @@ namespace AFPC
 {
     public abstract partial class ControllerGroundCheckBase : ControllerCast
     {
-        public virtual bool Grounded { get { return Resault != null; } }
+        public virtual bool Grounded { get { return HasResault && Slope <= maxSlope; } }
 
         public override Vector3 Start { get { return transform.position; } }
         public override Vector3 Direction { get { return Vector3.down; } }
@@ -67,16 +67,9 @@ namespace AFPC
         protected virtual void CalculateSlope()
         {
             if(HasResault)
-            {
                 Slope = Vector3.Angle(Resault.hit.normal, Vector3.up);
-
-                if (Slope > maxSlope)
-                    Resault = null;
-            }
             else
-            {
                 Slope = 0f;
-            }
         }
 
         protected virtual void ProcessChange(bool prevGrounded)

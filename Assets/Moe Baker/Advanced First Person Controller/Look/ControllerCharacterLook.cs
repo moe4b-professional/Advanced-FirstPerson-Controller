@@ -32,7 +32,7 @@ namespace AFPC
         {
             get
             {
-                return Look.Sensitvity.Horizontal * targetLookScale;
+                return Look.Sensitivity.Horizontal * targetLookScale;
             }
         }
 

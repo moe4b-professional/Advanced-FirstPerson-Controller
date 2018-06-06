@@ -21,7 +21,25 @@ namespace AFPC
 {
     public abstract partial class ControllerSpeedBase : FPController.Module
     {
-        public float MaxValue { get; protected set; }
+        protected float _maxValue;
+        public float MaxValue
+        {
+            get
+            {
+                return _maxValue;
+            }
+            set
+            {
+                if(value < 0f)
+                {
+                    return;
+                }
+
+                _maxValue = value;
+
+                Value = Value;
+            }
+        }
         public virtual void UpdateMaxValue()
         {
             MaxValue = Controller.Movement.State.Traverser.Transition.Speed;

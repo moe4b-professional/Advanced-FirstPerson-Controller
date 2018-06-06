@@ -52,7 +52,7 @@ namespace AFPC
         }
 
         [SerializeField]
-        protected float transitionSpeed = 20f;
+        protected float transitionSpeed = 6f;
         public float TransitionSpeed
         {
             get

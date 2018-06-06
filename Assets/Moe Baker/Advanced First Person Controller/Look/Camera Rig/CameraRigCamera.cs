@@ -101,7 +101,7 @@ namespace AFPC
         {
             get
             {
-                return Look.Sensitvity.Vertical * targetLookScale * Look.Control.AbsoluteScale;
+                return Look.Sensitivity.Vertical * targetLookScale * Look.Control.AbsoluteScale;
             }
         }
 

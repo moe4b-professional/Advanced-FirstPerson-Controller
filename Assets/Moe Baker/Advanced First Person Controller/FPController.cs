@@ -218,7 +218,7 @@ namespace AFPC
     {
         [SerializeField]
         protected bool toggle = true;
-        public bool _Toggle
+        public bool Toggle
         {
             get
             {
@@ -229,20 +229,11 @@ namespace AFPC
                 toggle = value;
             }
         }
-        public virtual bool AbsoluteToggle
-        {
-            get
-            {
-                if (_Scale == 0f) return false;
-
-                return _Toggle;
-            }
-        }
 
         [SerializeField]
         [Range(0f, 1f)]
         protected float scale = 1f;
-        public float _Scale
+        public float Scale
         {
             get
             {
@@ -253,13 +244,24 @@ namespace AFPC
                 scale = Mathf.Clamp01(value);
             }
         }
+
+        public virtual bool AbsoluteToggle
+        {
+            get
+            {
+                if (Scale == 0f) return false;
+
+                return Toggle;
+            }
+        }
+
         public virtual float AbsoluteScale
         {
             get
             {
-                if (_Toggle == false) return 0f;
+                if (Toggle == false) return 0f;
 
-                return _Scale;
+                return Scale;
             }
         }
 

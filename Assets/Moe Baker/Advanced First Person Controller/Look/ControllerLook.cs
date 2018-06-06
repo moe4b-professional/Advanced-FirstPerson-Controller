@@ -30,10 +30,10 @@ namespace AFPC
         public ControlConstraint Control { get { return control; } }
 
         [SerializeField]
-        protected SensitvityData sensitivity = new SensitvityData(4f);
-        public SensitvityData Sensitvity { get { return sensitivity; } }
+        protected SensitivityData sensitivity = new SensitivityData(4f);
+        public SensitivityData Sensitivity { get { return sensitivity; } }
         [Serializable]
-        public class SensitvityData
+        public class SensitivityData
         {
             [SerializeField]
             protected float vertical;
@@ -63,11 +63,23 @@ namespace AFPC
                 }
             }
 
-            public SensitvityData(float value) : this(value, value)
+            public virtual float CombinedValue
+            {
+                get
+                {
+                    return vertical + horizontal / 2f;
+                }
+                set
+                {
+                    vertical = horizontal = value;
+                }
+            }
+
+            public SensitivityData(float value) : this(value, value)
             {
 
             }
-            public SensitvityData(float vertical, float horizontal)
+            public SensitivityData(float vertical, float horizontal)
             {
                 this.vertical = vertical;
                 this.horizontal = horizontal;

@@ -19,7 +19,7 @@ using Random = UnityEngine.Random;
 
 namespace AFPC
 {
-	public abstract partial class ControllerAirMovementBase : ControllerMovementProcedure.Module
+    public abstract partial class ControllerAirMovementBase : ControllerMovementProcedure.Module
     {
         public override bool UpdateMaxSpeed { get { return false; } }
 
@@ -32,16 +32,16 @@ namespace AFPC
         public override bool ProcessStateTransitions { get { return processStateTransitions; } }
 
         [SerializeField]
-        protected float acceleration = 15f;
+        protected float acceleration = 5f;
         public float Acceleration { get { return acceleration; } }
 
         [SerializeField]
-        protected float deAcceleration = 15f;
+        protected float deAcceleration = 5f;
         public float DeAcceleration { get { return deAcceleration; } }
 
         [SerializeField]
-        protected float speedScale = 0.025f;
-        public float SpeedScale { get { return speedScale; } }
+        protected float maxMovementSpeed = 1f;
+        public float MaxMovementSpeed { get { return maxMovementSpeed; } }
 
         public override float Friction { get { return 0f; } }
 
@@ -50,25 +50,24 @@ namespace AFPC
         {
             base.Process();
 
-            CalculateSpeed();
-        }
-
-        protected virtual void CalculateSpeed()
-        {
-            Speed.Calculate(Control.AbsoluteScale, acceleration, deAcceleration, true);
+            Speed.Calculate(Control.AbsoluteScale, Speed.Magnitude > maxMovementSpeed ? 0f : acceleration, deAcceleration, true);
         }
 
         public override void FixedProcess()
         {
             base.FixedProcess();
 
-            var velocity = Direction.Forward * Speed.Value.y * speedScale +
-                Direction.Right * Speed.Value.x * speedScale;
+            Vector3 velocity;
 
-            velocity += Vector3.Scale(rigidbody.velocity, Vector3.right + Vector3.forward);
+            if (GroundCheck.Slope <= GroundCheck.MaxSlope)
+            {
+                velocity = Direction.Forward * Speed.Value.y +
+                Direction.Right * Speed.Value.x;
+            }
+            else
+                velocity = rigidbody.velocity;
 
             velocity = Vector3.ClampMagnitude(velocity, Speed.MaxValue);
-
             velocity.y = rigidbody.velocity.y;
 
             SetVelocity(velocity);

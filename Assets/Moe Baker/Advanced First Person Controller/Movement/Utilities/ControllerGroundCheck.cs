@@ -40,7 +40,7 @@ namespace AFPC
             }
         }
 
-        public float slope = 0f;
+        public float Slope { get; protected set; }
 
         public override void Init(FPController link)
         {
@@ -62,18 +62,20 @@ namespace AFPC
                 ProcessChange(prevGrounded);
             else
                 firstDoFlag = true;
-
-
         }
 
         protected virtual void CalculateSlope()
         {
             if(HasResault)
             {
-                slope = Vector3.Angle(Resault.hit.normal, Vector3.up);
+                Slope = Vector3.Angle(Resault.hit.normal, Vector3.up);
 
-                if (slope > maxSlope)
+                if (Slope > maxSlope)
                     Resault = null;
+            }
+            else
+            {
+                Slope = 0f;
             }
         }
 

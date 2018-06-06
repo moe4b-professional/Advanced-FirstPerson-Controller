@@ -160,7 +160,7 @@ namespace AFPC
 
         public virtual void GoTo(ControllerState.IData state)
         {
-            GoTo(state, Mathf.InverseLerp(Transition.Height, state.Height, Transition.Height));
+            GoTo(state, Mathf.InverseLerp(Target.Height, state.Height, Transition.Height));
         }
         protected virtual void GoTo(ControllerState.IData state, float lerpScale)
         {

@@ -813,9 +813,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateDirection: 1
   processStateTransitions: 1
-  acceleration: 15
-  deAcceleration: 15
-  speedScale: 0.025
+  acceleration: 5
+  deAcceleration: 5
+  maxMovementSpeed: 1
 --- !u!114 &114465494978858076
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -844,11 +844,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967035
   triggerInteraction: 1
-  radiusScale: 0.5
+  radiusScale: 1
   range: 0.1
   offset: 0.1
   maxSlope: 45
-  slope: 0
 --- !u!114 &114492301586249222
 MonoBehaviour:
   m_ObjectHideFlags: 1

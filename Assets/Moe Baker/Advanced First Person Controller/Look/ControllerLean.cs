@@ -26,6 +26,14 @@ namespace AFPC
         [SerializeField]
         protected ControlConstraint control;
         public ControlConstraint Control { get { return control; } }
+        public virtual void SetControlToggle(bool value)
+        {
+            control.Toggle = value;
+        }
+        public virtual void SetControlScale(float value)
+        {
+            control.Scale = value;
+        }
 
         public const float MaxRange = 80f;
         [SerializeField]

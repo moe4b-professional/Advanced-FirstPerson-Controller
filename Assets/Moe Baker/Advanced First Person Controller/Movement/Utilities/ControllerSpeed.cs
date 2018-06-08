@@ -112,7 +112,7 @@ namespace AFPC
         }
         public virtual float ProcessAxisAcceleration(float value, float input, float speed, bool snap)
         {
-            if (snap)
+            if (snap && speed > 0f)
                 value = ProcessSnap(value, input);
 
             return Mathf.MoveTowards(value, MaxValue * Mathf.Abs(input) * Mathf.Sign(input), speed * Time.deltaTime);
